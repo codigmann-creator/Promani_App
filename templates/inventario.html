@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - Promani</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+        <h1>Gestión de Inventario</h1>
+        <p>Promani</p>
+    </header>
+
+    <main>
+
+        <h2>Materiales registrados</h2>
+        <a href="/nuevo-material">Registrar nuevo material</a>
+
+        <br><br>
+
+        <a href="/nuevo-consumo">Registrar consumo de material</a>
+
+        <br><br>
+
+        <a href="/consumos">Ver historial de consumos</a>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Material</th>
+                    <th>Unidad</th>
+                    <th>Stock actual</th>
+                    <th>Stock mínimo</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for material in materiales %}
+
+                <tr>
+                    <td>{{ material["id"] }}</td>
+                    <td>{{ material["nombre"] }}</td>
+                    <td>{{ material["unidad"] }}</td>
+                    <td>{{ material["stock"] }}</td>
+                    <td>{{ material["stock_minimo"] }}</td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    </main>
+
+</body>
+</html>

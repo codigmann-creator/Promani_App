@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Consumos - Promani</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+        <h1>Historial de Consumos</h1>
+        <p>Promani</p>
+    </header>
+
+    <main>
+
+        <h2>Materiales utilizados en pedidos</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Pedido</th>
+                    <th>Cliente</th>
+                    <th>Material</th>
+                    <th>Cantidad</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for consumo in consumos %}
+
+                <tr>
+                    <td>{{ consumo["id"] }}</td>
+                    <td>#{{ consumo["pedido_id"] }} - {{ consumo["descripcion"] }}</td>
+                    <td>{{ consumo["cliente"] }}</td>
+                    <td>{{ consumo["material"] }}</td>
+                    <td>{{ consumo["cantidad"] }} {{ consumo["unidad"] }}</td>
+                    <td>{{ consumo["fecha"] }}</td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    </main>
+
+</body>
+</html>

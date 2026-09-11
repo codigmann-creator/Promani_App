@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Nuevo Proveedor - Promani</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+        <h1>Nuevo Proveedor</h1>
+        <p>Promani</p>
+    </header>
+
+    <main>
+
+        <h2>Registrar proveedor</h2>
+
+        <form method="POST" action="/nuevo-proveedor">
+
+            <label for="nombre">Nombre del proveedor</label>
+            <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                required
+            >
+
+            <label for="telefono">Teléfono</label>
+            <input
+                type="text"
+                id="telefono"
+                name="telefono"
+            >
+
+            <label for="correo">Correo electrónico</label>
+            <input
+                type="email"
+                id="correo"
+                name="correo"
+            >
+
+            <button type="submit">
+                Guardar proveedor
+            </button>
+
+        </form>
+
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Editar Pedido - Promani</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+        <h1>Editar Pedido</h1>
+        <p>Promani</p>
+    </header>
+
+    <main>
+
+        <h2>Actualizar estado del pedido</h2>
+
+        <p>
+            <strong>Pedido:</strong>
+            #{{ pedido["id"] }}
+        </p>
+
+        <p>
+            <strong>Cliente:</strong>
+            {{ pedido["cliente"] }}
+        </p>
+
+        <p>
+            <strong>Trabajo:</strong>
+            {{ pedido["descripcion"] }}
+        </p>
+
+        <form method="POST" action="/editar-pedido/{{ pedido['id'] }}">
+
+            <label for="estado">Estado</label>
+
+            <select id="estado" name="estado" required>
+
+                <option value="Pendiente"
+                    {% if pedido["estado"] == "Pendiente" %}selected{% endif %}>
+                    Pendiente
+                </option>
+
+                <option value="En producción"
+                    {% if pedido["estado"] == "En producción" %}selected{% endif %}>
+                    En producción
+                </option>
+
+                <option value="Terminado"
+                    {% if pedido["estado"] == "Terminado" %}selected{% endif %}>
+                    Terminado
+                </option>
+
+                <option value="Entregado"
+                    {% if pedido["estado"] == "Entregado" %}selected{% endif %}>
+                    Entregado
+                </option>
+
+            </select>
+
+            <button type="submit">
+                Guardar estado
+            </button>
+
+        </form>
+
+    </main>
+
+</body>
+</html>

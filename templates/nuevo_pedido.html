@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Pedido - Promani</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+        <h1>Nuevo Pedido</h1>
+        <p>Promani</p>
+    </header>
+
+    <main>
+
+        <h2>Registrar pedido</h2>
+
+        <form method="POST" action="/nuevo-pedido">
+
+            <label for="cliente">Cliente</label>
+            <input
+                type="text"
+                id="cliente"
+                name="cliente"
+                required
+            >
+
+            <label for="descripcion">Descripción del trabajo</label>
+            <input
+                type="text"
+                id="descripcion"
+                name="descripcion"
+                required
+            >
+
+            <label for="medidas">Medidas</label>
+            <input
+                type="text"
+                id="medidas"
+                name="medidas"
+                placeholder="Ej: 180 x 70 x 90 cm"
+            >
+
+            <label for="estado">Estado</label>
+            <select id="estado" name="estado" required>
+                <option value="Pendiente">Pendiente</option>
+                <option value="En producción">En producción</option>
+                <option value="Terminado">Terminado</option>
+                <option value="Entregado">Entregado</option>
+            </select>
+
+            <label for="observaciones">Observaciones</label>
+            <textarea
+                id="observaciones"
+                name="observaciones"
+            ></textarea>
+
+            <button type="submit">Guardar pedido</button>
+
+        </form>
+
+    </main>
+
+</body>
+</html>

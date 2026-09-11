@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Proveedores - Promani</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+        <h1>Gestión de Proveedores</h1>
+        <p>Promani</p>
+    </header>
+
+    <main>
+
+        <h2>Proveedores registrados</h2>
+
+        <a href="/nuevo-proveedor">Registrar nuevo proveedor</a>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for proveedor in proveedores %}
+
+                <tr>
+                    <td>{{ proveedor["id"] }}</td>
+                    <td>{{ proveedor["nombre"] }}</td>
+                    <td>{{ proveedor["telefono"] }}</td>
+                    <td>{{ proveedor["correo"] }}</td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promani - Gestión de Pedidos e Inventario</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+        <h1>Sistema de Gestión de Pedidos e Inventario</h1>
+        <p>Promani</p>
+    </header>
+
+    <main>
+
+        <h2>Panel principal</h2>
+
+        <section class="dashboard">
+
+            <div class="tarjeta">
+                <h3>Pedidos pendientes</h3>
+                <p>{{ pendientes }}</p>
+            </div>
+
+            <div class="tarjeta">
+                <h3>En producción</h3>
+                <p>{{ en_produccion }}</p>
+            </div>
+
+            <div class="tarjeta">
+                <h3>Terminados</h3>
+                <p>{{ terminados }}</p>
+            </div>
+
+            <div class="tarjeta">
+                <h3>Stock bajo</h3>
+                <p>{{ stock_bajo }}</p>
+            </div>
+
+        </section>
+
+        <a href="/pedidos">Ver pedidos</a>
+        <br><br>
+        <a href="/inventario">Ver inventario</a>
+
+    </main>
+
+</body>
+</html>
