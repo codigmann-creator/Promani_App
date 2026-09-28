@@ -71,6 +71,17 @@ CREATE TABLE IF NOT EXISTS compras (
 """)
 
 
+# Tabla de usuarios
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario TEXT NOT NULL UNIQUE,
+    contrasena_hash TEXT NOT NULL,
+    rol TEXT NOT NULL DEFAULT 'usuario'
+)
+""")
+
+
 conexion.commit()
 conexion.close()
 

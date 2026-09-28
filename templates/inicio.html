@@ -1,53 +1,309 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Promani - Gestión de Pedidos e Inventario</title>
+{% extends "base.html" %}
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+{% block title %}
+Inicio - Promani
+{% endblock %}
 
-<body>
 
-    <header>
-        <h1>Sistema de Gestión de Pedidos e Inventario</h1>
-        <p>Promani</p>
-    </header>
+{% block content %}
 
-    <main>
+    <section class="inicio-cabecera">
 
-        <h2>Panel principal</h2>
+        <div>
 
-        <section class="dashboard">
+            <h2>Panel principal</h2>
 
-            <div class="tarjeta">
-                <h3>Pedidos pendientes</h3>
-                <p>{{ pendientes }}</p>
+            <p>
+                Bienvenido,
+                <strong>{{ session["usuario"] }}</strong>.
+                Desde este panel puedes acceder a las principales funciones del sistema.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- INDICADORES PRINCIPALES -->
+
+    <section class="dashboard">
+
+
+        <!-- PEDIDOS PENDIENTES -->
+
+        <div class="tarjeta tarjeta-pendientes">
+
+            <h3>
+                Pedidos pendientes
+            </h3>
+
+            <p>
+                {{ pendientes }}
+            </p>
+
+            <span>
+                Pedidos que aún no comienzan producción
+            </span>
+
+        </div>
+
+
+        <!-- EN PRODUCCIÓN -->
+
+        <div class="tarjeta tarjeta-produccion">
+
+            <h3>
+                En producción
+            </h3>
+
+            <p>
+                {{ en_produccion }}
+            </p>
+
+            <span>
+                Pedidos actualmente en proceso
+            </span>
+
+        </div>
+
+
+        <!-- TERMINADOS -->
+
+        <div class="tarjeta tarjeta-terminados">
+
+            <h3>
+                Terminados
+            </h3>
+
+            <p>
+                {{ terminados }}
+            </p>
+
+            <span>
+                Pedidos finalizados
+            </span>
+
+        </div>
+
+
+        <!-- PEDIDOS ATRASADOS -->
+
+        <div class="tarjeta tarjeta-atrasados">
+
+            <h3>
+                Pedidos atrasados
+            </h3>
+
+            <p>
+                {{ atrasados }}
+            </p>
+
+            <span>
+                Pedidos que superaron su fecha de entrega
+            </span>
+
+        </div>
+
+
+        <!-- STOCK BAJO -->
+
+        <div class="tarjeta tarjeta-stock-bajo">
+
+            <h3>
+                Stock bajo
+            </h3>
+
+            <p>
+                {{ stock_bajo }}
+            </p>
+
+            <span>
+                Materiales que requieren reposición
+            </span>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- ACCESOS RÁPIDOS -->
+
+    <h2>
+        Accesos rápidos
+    </h2>
+
+
+    <section class="accesos-grid">
+
+
+        <!-- PEDIDOS -->
+
+        <a href="/pedidos" class="acceso-card">
+
+            <div class="acceso-contenido">
+
+                <h3>
+                    Pedidos
+                </h3>
+
+                <p>
+                    Registrar pedidos y actualizar su estado de producción.
+                </p>
+
             </div>
 
-            <div class="tarjeta">
-                <h3>En producción</h3>
-                <p>{{ en_produccion }}</p>
+            <span class="acceso-ir">
+                Ir a pedidos →
+            </span>
+
+        </a>
+
+
+        <!-- INVENTARIO -->
+
+        <a href="/inventario" class="acceso-card">
+
+            <div class="acceso-contenido">
+
+                <h3>
+                    Inventario
+                </h3>
+
+                <p>
+                    Consultar materiales, stock actual y niveles mínimos.
+                </p>
+
             </div>
 
-            <div class="tarjeta">
-                <h3>Terminados</h3>
-                <p>{{ terminados }}</p>
+            <span class="acceso-ir">
+                Ir a inventario →
+            </span>
+
+        </a>
+
+
+        <!-- CONSUMOS -->
+
+        <a href="/consumos" class="acceso-card">
+
+            <div class="acceso-contenido">
+
+                <h3>
+                    Consumos
+                </h3>
+
+                <p>
+                    Revisar los materiales utilizados en cada pedido.
+                </p>
+
             </div>
 
-            <div class="tarjeta">
-                <h3>Stock bajo</h3>
-                <p>{{ stock_bajo }}</p>
-            </div>
+            <span class="acceso-ir">
+                Ver consumos →
+            </span>
 
-        </section>
+        </a>
 
-        <a href="/pedidos">Ver pedidos</a>
-        <br><br>
-        <a href="/inventario">Ver inventario</a>
 
-    </main>
+        {% if session["rol"] == "administrador" %}
 
-</body>
-</html>
+
+            <!-- PROVEEDORES -->
+
+            <a href="/proveedores" class="acceso-card">
+
+                <div class="acceso-contenido">
+
+                    <h3>
+                        Proveedores
+                    </h3>
+
+                    <p>
+                        Registrar y consultar proveedores de materiales.
+                    </p>
+
+                </div>
+
+                <span class="acceso-ir">
+                    Ver proveedores →
+                </span>
+
+            </a>
+
+
+            <!-- REGISTRAR COMPRA -->
+
+            <a href="/nueva-compra" class="acceso-card">
+
+                <div class="acceso-contenido">
+
+                    <h3>
+                        Registrar compra
+                    </h3>
+
+                    <p>
+                        Ingresar nuevas compras y actualizar automáticamente el stock.
+                    </p>
+
+                </div>
+
+                <span class="acceso-ir">
+                    Registrar compra →
+                </span>
+
+            </a>
+
+
+            <!-- HISTORIAL DE COMPRAS -->
+
+            <a href="/compras" class="acceso-card">
+
+                <div class="acceso-contenido">
+
+                    <h3>
+                        Historial de compras
+                    </h3>
+
+                    <p>
+                        Consultar las compras realizadas y sus proveedores.
+                    </p>
+
+                </div>
+
+                <span class="acceso-ir">
+                    Ver historial →
+                </span>
+
+            </a>
+
+
+            <!-- USUARIOS -->
+
+            <a href="/usuarios" class="acceso-card">
+
+                <div class="acceso-contenido">
+
+                    <h3>
+                        Usuarios
+                    </h3>
+
+                    <p>
+                        Crear usuarios y administrar sus permisos dentro del sistema.
+                    </p>
+
+                </div>
+
+                <span class="acceso-ir">
+                    Gestionar usuarios →
+                </span>
+
+            </a>
+
+
+        {% endif %}
+
+
+    </section>
+
+{% endblock %}

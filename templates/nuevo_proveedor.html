@@ -1,56 +1,173 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
 
-    <title>Nuevo Proveedor - Promani</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+{% block title %}
+Registrar Proveedor - Promani
+{% endblock %}
 
-<body>
 
-    <header>
-        <h1>Nuevo Proveedor</h1>
-        <p>Promani</p>
-    </header>
+{% block content %}
 
-    <main>
+<div class="formulario-pagina">
 
-        <h2>Registrar proveedor</h2>
 
-        <form method="POST" action="/nuevo-proveedor">
+    <!-- ENCABEZADO -->
 
-            <label for="nombre">Nombre del proveedor</label>
-            <input
-                type="text"
-                id="nombre"
-                name="nombre"
-                required
+    <section class="formulario-encabezado">
+
+        <h2>
+            Registrar nuevo proveedor
+        </h2>
+
+        <p>
+            Ingresa los datos principales del proveedor
+            para utilizarlo posteriormente en el registro de compras.
+        </p>
+
+    </section>
+
+
+    <!-- TARJETA -->
+
+    <section class="formulario-card">
+
+
+        <div class="formulario-card-header">
+
+            <h3>
+                Información del proveedor
+            </h3>
+
+            <p>
+                Completa los datos básicos de identificación y contacto.
+            </p>
+
+        </div>
+
+
+        <div class="formulario-card-body">
+
+
+            <form
+                method="POST"
+                action="/nuevo-proveedor"
+                class="formulario-promani"
             >
 
-            <label for="telefono">Teléfono</label>
-            <input
-                type="text"
-                id="telefono"
-                name="telefono"
-            >
 
-            <label for="correo">Correo electrónico</label>
-            <input
-                type="email"
-                id="correo"
-                name="correo"
-            >
+                <div class="formulario-grid">
 
-            <button type="submit">
-                Guardar proveedor
-            </button>
 
-        </form>
+                    <!-- NOMBRE -->
 
-    </main>
+                    <div class="campo-formulario campo-completo">
 
-</body>
-</html>
+                        <label for="nombre">
+                            Nombre del proveedor
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nombre"
+                            name="nombre"
+                            placeholder="Ejemplo: Aceros Santiago Ltda."
+                            required
+                        >
+
+                        <span class="ayuda-campo">
+                            Ingresa el nombre de la empresa o proveedor.
+                        </span>
+
+                    </div>
+
+
+                    <!-- TELÉFONO -->
+
+                    <div class="campo-formulario">
+
+                        <label for="telefono">
+                            Teléfono
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="telefono"
+                            name="telefono"
+                            placeholder="Ejemplo: +56 9 1234 5678"
+                        >
+
+                        <span class="ayuda-campo">
+                            Campo opcional.
+                        </span>
+
+                    </div>
+
+
+                    <!-- CORREO -->
+
+                    <div class="campo-formulario">
+
+                        <label for="correo">
+                            Correo electrónico
+                        </label>
+
+                        <input
+                            type="email"
+                            id="correo"
+                            name="correo"
+                            placeholder="Ejemplo: ventas@proveedor.cl"
+                        >
+
+                        <span class="ayuda-campo">
+                            Campo opcional.
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- AVISO -->
+
+                <div class="aviso-formulario">
+
+                    <strong>
+                        Uso del proveedor:
+                    </strong>
+
+                    una vez registrado, aparecerá disponible
+                    al momento de ingresar nuevas compras de materiales.
+
+                </div>
+
+
+                <!-- ACCIONES -->
+
+                <div class="formulario-acciones">
+
+                    <a
+                        href="/proveedores"
+                        class="boton-volver"
+                    >
+                        Volver
+                    </a>
+
+                    <button type="submit">
+                        Registrar proveedor
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </section>
+
+
+</div>
+
+{% endblock %}

@@ -2,7 +2,7 @@
 
 
 {% block title %}
-Consumos - Promani
+Historial de Compras - Promani
 {% endblock %}
 
 
@@ -16,12 +16,12 @@ Consumos - Promani
     <section class="pedidos-encabezado">
 
         <h2>
-            Historial de Consumos
+            Historial de Compras
         </h2>
 
         <p>
-            Consulta los materiales utilizados en los distintos pedidos
-            y revisa las cantidades descontadas del inventario.
+            Consulta las compras de materiales realizadas,
+            los proveedores asociados y las cantidades ingresadas al inventario.
         </p>
 
     </section>
@@ -47,26 +47,50 @@ Consumos - Promani
             <div class="pedidos-tarjetas">
 
                 <a
-                    href="/nuevo-consumo"
+                    href="/nueva-compra"
                     class="acceso-card pedido-card"
                 >
 
                     <div class="acceso-contenido">
 
                         <h3>
-                            Registrar consumo
+                            Registrar compra
                         </h3>
 
                         <p>
-                            Asociar un material a un pedido
-                            y descontar la cantidad utilizada
-                            automáticamente del inventario.
+                            Ingresar una nueva compra de material
+                            y actualizar automáticamente el stock disponible.
                         </p>
 
                     </div>
 
                     <span class="acceso-ir">
-                        Registrar consumo →
+                        Registrar compra →
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="/inventario"
+                    class="acceso-card pedido-card"
+                >
+
+                    <div class="acceso-contenido">
+
+                        <h3>
+                            Ver inventario
+                        </h3>
+
+                        <p>
+                            Consultar los materiales registrados,
+                            su stock actual y niveles mínimos.
+                        </p>
+
+                    </div>
+
+                    <span class="acceso-ir">
+                        Ir a inventario →
                     </span>
 
                 </a>
@@ -81,9 +105,8 @@ Consumos - Promani
                 </h4>
 
                 <p>
-                    Cada consumo registrado descuenta automáticamente
-                    la cantidad utilizada del stock disponible
-                    del material seleccionado.
+                    Cada compra registrada aumenta automáticamente
+                    el stock del material seleccionado.
                 </p>
 
             </div>
@@ -99,11 +122,11 @@ Consumos - Promani
         <section class="pedidos-panel pedidos-central">
 
             <h3 class="titulo-panel-pedidos">
-                Consumos registrados
+                Compras registradas
             </h3>
 
 
-            {% if consumos %}
+            {% if compras %}
 
                 <div class="tabla-pedidos">
 
@@ -113,13 +136,12 @@ Consumos - Promani
 
                             <tr>
                                 <th>ID</th>
-                                <th>Pedido</th>
-                                <th>Cliente</th>
-                                <th>Descripción</th>
+                                <th>Proveedor</th>
                                 <th>Material</th>
                                 <th>Cantidad</th>
                                 <th>Unidad</th>
                                 <th>Fecha</th>
+                                <th>Observaciones</th>
                             </tr>
 
                         </thead>
@@ -127,60 +149,89 @@ Consumos - Promani
 
                         <tbody>
 
-                            {% for consumo in consumos %}
+                            {% for compra in compras %}
 
                                 <tr>
 
+                                    <!-- ID -->
+
                                     <td>
-                                        {{ consumo["id"] }}
+                                        {{ compra["id"] }}
                                     </td>
 
 
+                                    <!-- PROVEEDOR -->
+
                                     <td>
-                                        #{{ consumo["pedido_id"] }}
+                                        {{ compra["proveedor"] }}
                                     </td>
 
 
+                                    <!-- MATERIAL -->
+
                                     <td>
-                                        {{ consumo["cliente"] }}
+                                        {{ compra["material"] }}
                                     </td>
 
 
-                                    <td>
-                                        {{ consumo["descripcion"] }}
-                                    </td>
-
-
-                                    <td>
-                                        {{ consumo["material"] }}
-                                    </td>
-
+                                    <!-- CANTIDAD -->
 
                                     <td>
 
-                                        {% if consumo["cantidad"] % 1 == 0 %}
+                                        {% if compra["cantidad"] % 1 == 0 %}
 
-                                            {{ consumo["cantidad"] | int }}
+                                            {{ compra["cantidad"] | int }}
 
                                         {% else %}
 
-                                            {{ consumo["cantidad"] }}
+                                            {{ compra["cantidad"] }}
 
                                         {% endif %}
 
                                     </td>
 
 
+                                    <!-- UNIDAD -->
+
                                     <td>
-                                        {{ consumo["unidad"] }}
+                                        {{ compra["unidad"] }}
                                     </td>
 
 
+                                    <!-- FECHA -->
+
                                     <td>
 
-                                        {% if consumo["fecha"] %}
+                                        {% if compra["fecha"] %}
 
-                                            {{ consumo["fecha"] }}
+                                            {{ compra["fecha"][8:10] }}/{{ compra["fecha"][5:7] }}/{{ compra["fecha"][0:4] }}
+
+                                            {% if compra["fecha"]|length >= 16 %}
+
+                                                <br>
+
+                                                <span style="font-size: 12px; color: #71808a;">
+                                                    {{ compra["fecha"][11:16] }}
+                                                </span>
+
+                                            {% endif %}
+
+                                        {% else %}
+
+                                            -
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- OBSERVACIONES -->
+
+                                    <td>
+
+                                        {% if compra["observaciones"] %}
+
+                                            {{ compra["observaciones"] }}
 
                                         {% else %}
 
@@ -203,7 +254,7 @@ Consumos - Promani
             {% else %}
 
                 <p>
-                    Aún no existen consumos registrados.
+                    Aún no existen compras registradas.
                 </p>
 
             {% endif %}
@@ -229,11 +280,12 @@ Consumos - Promani
                 <div class="estado-item">
 
                     <span class="estado estado-produccion">
-                        1. Pedido
+                        1. Proveedor
                     </span>
 
                     <p>
-                        Se selecciona el pedido en el que se utilizó el material.
+                        Se identifica el proveedor al que se realizó
+                        la compra del material.
                     </p>
 
                 </div>
@@ -246,7 +298,8 @@ Consumos - Promani
                     </span>
 
                     <p>
-                        Se selecciona el material utilizado desde el inventario.
+                        Se selecciona el material que ingresará
+                        al inventario.
                     </p>
 
                 </div>
@@ -259,7 +312,8 @@ Consumos - Promani
                     </span>
 
                     <p>
-                        Se indica cuánto material fue utilizado en el trabajo.
+                        Se registra la cantidad de material
+                        adquirida en la compra.
                     </p>
 
                 </div>
@@ -268,26 +322,12 @@ Consumos - Promani
                 <div class="estado-item">
 
                     <span class="estado estado-entregado">
-                        4. Stock
+                        4. Inventario
                     </span>
 
                     <p>
-                        El sistema descuenta automáticamente la cantidad
-                        utilizada del inventario.
-                    </p>
-
-                </div>
-
-
-                <div class="estado-item">
-
-                    <span class="estado estado-atrasado">
-                        Control
-                    </span>
-
-                    <p>
-                        Si la cantidad solicitada supera el stock disponible,
-                        el sistema no permite registrar el consumo.
+                        La cantidad comprada se suma automáticamente
+                        al stock disponible.
                     </p>
 
                 </div>

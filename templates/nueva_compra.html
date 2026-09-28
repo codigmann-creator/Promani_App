@@ -1,0 +1,521 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Registrar Compra - Promani
+{% endblock %}
+
+
+{% block content %}
+
+<div class="formulario-pagina">
+
+
+    <!-- ENCABEZADO -->
+
+    <section class="formulario-encabezado">
+
+        <h2>
+            Registrar compra de material
+        </h2>
+
+        <p>
+            Registra una compra realizada a un proveedor.
+            La cantidad ingresada será agregada automáticamente
+            al stock disponible del material seleccionado.
+        </p>
+
+    </section>
+
+
+    <!-- TARJETA PRINCIPAL -->
+
+    <section class="formulario-card">
+
+
+        <div class="formulario-card-header">
+
+            <h3>
+                Información de la compra
+            </h3>
+
+            <p>
+                Selecciona el proveedor, el material comprado
+                y la cantidad ingresada al inventario.
+            </p>
+
+        </div>
+
+
+        <div class="formulario-card-body">
+
+
+            <form
+                method="POST"
+                action="/nueva-compra"
+                class="formulario-promani"
+                id="formulario-compra"
+            >
+
+
+                <div class="formulario-grid">
+
+
+                    <!-- =====================================
+                         PROVEEDOR
+                         ===================================== -->
+
+                    <div class="campo-formulario">
+
+                        <label for="proveedor_id">
+                            Proveedor
+                        </label>
+
+                        <select
+                            id="proveedor_id"
+                            name="proveedor_id"
+                            required
+                        >
+
+                            <option value="">
+                                Seleccione un proveedor
+                            </option>
+
+
+                            {% for proveedor in proveedores %}
+
+                                <option value="{{ proveedor['id'] }}">
+
+                                    {{ proveedor["nombre"] }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+
+                        <span class="ayuda-campo">
+                            Proveedor al que se realizó la compra.
+                        </span>
+
+                    </div>
+
+
+                    <!-- =====================================
+                         MATERIAL
+                         ===================================== -->
+
+                    <div class="campo-formulario">
+
+                        <label for="material_id">
+                            Material
+                        </label>
+
+                        <select
+                            id="material_id"
+                            name="material_id"
+                            required
+                        >
+
+                            <option
+                                value=""
+                                data-stock=""
+                                data-unidad=""
+                            >
+                                Seleccione un material
+                            </option>
+
+
+                            {% for material in materiales %}
+
+                                <option
+                                    value="{{ material['id'] }}"
+                                    data-stock="{{ material['stock'] }}"
+                                    data-unidad="{{ material['unidad'] }}"
+                                >
+
+                                    {{ material["nombre"] }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+
+                        <span class="ayuda-campo">
+                            Material que ingresará al inventario.
+                        </span>
+
+                    </div>
+
+
+                    <!-- =====================================
+                         CANTIDAD
+                         ===================================== -->
+
+                    <div class="campo-formulario">
+
+                        <label for="cantidad">
+                            Cantidad comprada
+                        </label>
+
+                        <input
+                            type="text"
+                            id="cantidad"
+                            name="cantidad"
+                            inputmode="decimal"
+                            placeholder="Ejemplo: 10"
+                            required
+                        >
+
+                        <span
+                            class="ayuda-campo"
+                            id="unidad-compra"
+                        >
+                            Selecciona un material para conocer su unidad.
+                        </span>
+
+                    </div>
+
+
+                    <!-- =====================================
+                         STOCK ACTUAL
+                         ===================================== -->
+
+                    <div class="campo-formulario">
+
+                        <label>
+                            Stock actual
+                        </label>
+
+                        <input
+                            type="text"
+                            id="stock-actual"
+                            value="Seleccione un material"
+                            readonly
+                        >
+
+                        <span class="ayuda-campo">
+                            Cantidad registrada actualmente en inventario.
+                        </span>
+
+                    </div>
+
+
+                    <!-- =====================================
+                         OBSERVACIONES
+                         ===================================== -->
+
+                    <div class="campo-formulario campo-completo">
+
+                        <label for="observaciones">
+                            Observaciones
+                        </label>
+
+                        <textarea
+                            id="observaciones"
+                            name="observaciones"
+                            placeholder="Ejemplo: Compra correspondiente a reposición de stock"
+                        ></textarea>
+
+                        <span class="ayuda-campo">
+                            Este campo es opcional.
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =====================================
+                     RESULTADO ESTIMADO
+                     ===================================== -->
+
+                <div
+                    class="aviso-formulario"
+                    id="resultado-stock"
+                    style="display: none;"
+                >
+
+                    <strong>
+                        Stock después de la compra:
+                    </strong>
+
+                    <span id="stock-resultante">
+                        -
+                    </span>
+
+                </div>
+
+
+                <!-- =====================================
+                     BOTONES
+                     ===================================== -->
+
+                <div class="formulario-acciones">
+
+
+                    <a
+                        href="/inventario"
+                        class="boton-volver"
+                    >
+                        Volver
+                    </a>
+
+
+                    <button type="submit">
+                        Registrar compra
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </section>
+
+
+</div>
+
+
+<script>
+
+    const selectorMaterial =
+        document.getElementById("material_id");
+
+    const campoCantidad =
+        document.getElementById("cantidad");
+
+    const campoStockActual =
+        document.getElementById("stock-actual");
+
+    const unidadCompra =
+        document.getElementById("unidad-compra");
+
+    const resultadoStock =
+        document.getElementById("resultado-stock");
+
+    const stockResultante =
+        document.getElementById("stock-resultante");
+
+
+    /* =========================================
+       FORMATEAR NÚMEROS
+       ========================================= */
+
+    function formatearNumero(numero) {
+
+        if (Number.isInteger(numero)) {
+
+            return numero.toString();
+
+        }
+
+        return numero.toString();
+
+    }
+
+
+    /* =========================================
+       MOSTRAR STOCK ACTUAL
+       ========================================= */
+
+    function actualizarInformacionMaterial() {
+
+        const opcionSeleccionada =
+            selectorMaterial.options[
+                selectorMaterial.selectedIndex
+            ];
+
+
+        const stockTexto =
+            opcionSeleccionada.dataset.stock;
+
+        const unidad =
+            opcionSeleccionada.dataset.unidad;
+
+
+        if (stockTexto === "") {
+
+            campoStockActual.value =
+                "Seleccione un material";
+
+            unidadCompra.textContent =
+                "Selecciona un material para conocer su unidad.";
+
+            resultadoStock.style.display =
+                "none";
+
+            return;
+
+        }
+
+
+        const stock =
+            Number(stockTexto);
+
+
+        campoStockActual.value =
+            formatearNumero(stock) +
+            " " +
+            unidad;
+
+
+        unidadCompra.textContent =
+            "Ingrese la cantidad comprada en " +
+            unidad +
+            ".";
+
+
+        calcularStockResultante();
+
+    }
+
+
+    /* =========================================
+       CALCULAR STOCK DESPUÉS DE LA COMPRA
+       ========================================= */
+
+    function calcularStockResultante() {
+
+        const opcionSeleccionada =
+            selectorMaterial.options[
+                selectorMaterial.selectedIndex
+            ];
+
+
+        const stockTexto =
+            opcionSeleccionada.dataset.stock;
+
+        const unidad =
+            opcionSeleccionada.dataset.unidad;
+
+
+        if (stockTexto === "") {
+
+            resultadoStock.style.display =
+                "none";
+
+            return;
+
+        }
+
+
+        const cantidadTexto =
+            campoCantidad
+                .value
+                .trim()
+                .replace(",", ".");
+
+
+        if (cantidadTexto === "") {
+
+            resultadoStock.style.display =
+                "none";
+
+            return;
+
+        }
+
+
+        const stock =
+            Number(stockTexto);
+
+        const cantidad =
+            Number(cantidadTexto);
+
+
+        if (
+            !Number.isFinite(cantidad) ||
+            cantidad <= 0
+        ) {
+
+            resultadoStock.style.display =
+                "none";
+
+            return;
+
+        }
+
+
+        const nuevoStock =
+            stock + cantidad;
+
+
+        stockResultante.textContent =
+            formatearNumero(nuevoStock) +
+            " " +
+            unidad;
+
+
+        resultadoStock.style.display =
+            "block";
+
+    }
+
+
+    /* =========================================
+       EVENTOS
+       ========================================= */
+
+    selectorMaterial.addEventListener(
+        "change",
+        actualizarInformacionMaterial
+    );
+
+
+    campoCantidad.addEventListener(
+        "input",
+        calcularStockResultante
+    );
+
+
+    /* =========================================
+       VALIDACIÓN
+       ========================================= */
+
+    document
+        .getElementById("formulario-compra")
+        .addEventListener(
+            "submit",
+            function(event) {
+
+                const cantidadTexto =
+                    campoCantidad
+                        .value
+                        .trim()
+                        .replace(",", ".");
+
+
+                const cantidad =
+                    Number(cantidadTexto);
+
+
+                if (
+                    !Number.isFinite(cantidad) ||
+                    cantidad <= 0
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "La cantidad comprada debe ser un número mayor que 0."
+                    );
+
+                    return;
+
+                }
+
+            }
+        );
+
+</script>
+
+{% endblock %}

@@ -1,67 +1,408 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Consumo - Promani</title>
+{% extends "base.html" %}
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
 
-<body>
+{% block title %}
+Registrar Consumo - Promani
+{% endblock %}
 
-    <header>
-        <h1>Registrar Consumo de Material</h1>
-        <p>Promani</p>
-    </header>
 
-    <main>
+{% block content %}
 
-        <h2>Asociar material a un pedido</h2>
+<div class="formulario-pagina">
 
-        <form method="POST" action="/nuevo-consumo">
 
-            <label for="pedido_id">Pedido</label>
-            <select id="pedido_id" name="pedido_id" required>
+    <!-- ENCABEZADO -->
 
-                <option value="">Seleccione un pedido</option>
+    <section class="formulario-encabezado">
 
-                {% for pedido in pedidos %}
-                    <option value="{{ pedido['id'] }}">
-                        Pedido #{{ pedido['id'] }} - {{ pedido['cliente'] }} - {{ pedido['descripcion'] }}
-                    </option>
-                {% endfor %}
+        <h2>
+            Registrar consumo de material
+        </h2>
 
-            </select>
+        <p>
+            Registra los materiales utilizados en un pedido.
+            La cantidad indicada será descontada automáticamente
+            del stock disponible.
+        </p>
 
-            <label for="material_id">Material</label>
-            <select id="material_id" name="material_id" required>
+    </section>
 
-                <option value="">Seleccione un material</option>
 
-                {% for material in materiales %}
-                    <option value="{{ material['id'] }}">
-                        {{ material['nombre'] }} - Stock: {{ material['stock'] }} {{ material['unidad'] }}
-                    </option>
-                {% endfor %}
+    <!-- TARJETA PRINCIPAL -->
 
-            </select>
+    <section class="formulario-card">
 
-            <label for="cantidad">Cantidad utilizada</label>
-            <input
-                type="number"
-                id="cantidad"
-                name="cantidad"
-                min="0.01"
-                step="0.01"
-                required
+
+        <div class="formulario-card-header">
+
+            <h3>
+                Información del consumo
+            </h3>
+
+            <p>
+                Selecciona el pedido, el material utilizado
+                y la cantidad consumida.
+            </p>
+
+        </div>
+
+
+        <div class="formulario-card-body">
+
+
+            <form
+                method="POST"
+                action="/nuevo-consumo"
+                class="formulario-promani"
+                id="formulario-consumo"
             >
 
-            <button type="submit">Registrar consumo</button>
 
-        </form>
+                <div class="formulario-grid">
 
-    </main>
 
-</body>
-</html>
+                    <!-- =====================================
+                         PEDIDO
+                         ===================================== -->
+
+                    <div class="campo-formulario campo-completo">
+
+                        <label for="pedido_id">
+                            Pedido asociado
+                        </label>
+
+                        <select
+                            id="pedido_id"
+                            name="pedido_id"
+                            required
+                        >
+
+                            <option value="">
+                                Seleccione un pedido
+                            </option>
+
+
+                            {% for pedido in pedidos %}
+
+                                <option value="{{ pedido['id'] }}">
+
+                                    Pedido #{{ pedido["id"] }}
+                                    - {{ pedido["cliente"] }}
+                                    - {{ pedido["descripcion"] }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+
+                        <span class="ayuda-campo">
+                            Selecciona el pedido en el que se utilizó el material.
+                        </span>
+
+                    </div>
+
+
+                    <!-- =====================================
+                         MATERIAL
+                         ===================================== -->
+
+                    <div class="campo-formulario">
+
+                        <label for="material_id">
+                            Material
+                        </label>
+
+                        <select
+                            id="material_id"
+                            name="material_id"
+                            required
+                        >
+
+                            <option
+                                value=""
+                                data-stock=""
+                                data-unidad=""
+                            >
+                                Seleccione un material
+                            </option>
+
+
+                            {% for material in materiales %}
+
+                                <option
+                                    value="{{ material['id'] }}"
+                                    data-stock="{{ material['stock'] }}"
+                                    data-unidad="{{ material['unidad'] }}"
+                                >
+
+                                    {{ material["nombre"] }}
+
+                                    -
+
+                                    {% if material["stock"] % 1 == 0 %}
+
+                                        {{ material["stock"] | int }}
+
+                                    {% else %}
+
+                                        {{ material["stock"] }}
+
+                                    {% endif %}
+
+                                    {{ material["unidad"] }}
+
+                                    disponibles
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+
+                        <span class="ayuda-campo">
+                            Solo se puede consumir stock actualmente disponible.
+                        </span>
+
+                    </div>
+
+
+                    <!-- =====================================
+                         CANTIDAD
+                         ===================================== -->
+
+                    <div class="campo-formulario">
+
+                        <label for="cantidad">
+                            Cantidad utilizada
+                        </label>
+
+                        <input
+                            type="text"
+                            id="cantidad"
+                            name="cantidad"
+                            inputmode="decimal"
+                            placeholder="Ejemplo: 2,5"
+                            required
+                        >
+
+                        <span
+                            class="ayuda-campo"
+                            id="unidad-cantidad"
+                        >
+                            Selecciona un material para conocer su unidad.
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- INFORMACIÓN DE STOCK -->
+
+                <div
+                    class="aviso-formulario"
+                    id="informacion-stock"
+                    style="display: none;"
+                >
+
+                    <strong>
+                        Stock disponible:
+                    </strong>
+
+                    <span id="stock-disponible">
+                        -
+                    </span>
+
+                </div>
+
+
+                <!-- ACCIONES -->
+
+                <div class="formulario-acciones">
+
+
+                    <a
+                        href="/inventario"
+                        class="boton-volver"
+                    >
+                        Volver
+                    </a>
+
+
+                    <button type="submit">
+                        Registrar consumo
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </section>
+
+
+</div>
+
+
+<script>
+
+    const selectorMaterial =
+        document.getElementById("material_id");
+
+    const campoCantidad =
+        document.getElementById("cantidad");
+
+    const informacionStock =
+        document.getElementById("informacion-stock");
+
+    const stockDisponible =
+        document.getElementById("stock-disponible");
+
+    const unidadCantidad =
+        document.getElementById("unidad-cantidad");
+
+
+    /* =========================================
+       MOSTRAR STOCK DEL MATERIAL
+       ========================================= */
+
+    selectorMaterial.addEventListener(
+        "change",
+        function() {
+
+            const opcionSeleccionada =
+                selectorMaterial.options[
+                    selectorMaterial.selectedIndex
+                ];
+
+
+            const stock =
+                opcionSeleccionada.dataset.stock;
+
+            const unidad =
+                opcionSeleccionada.dataset.unidad;
+
+
+            if (stock !== "") {
+
+                let stockMostrar = Number(stock);
+
+
+                if (Number.isInteger(stockMostrar)) {
+
+                    stockMostrar =
+                        stockMostrar.toString();
+
+                }
+
+
+                stockDisponible.textContent =
+                    stockMostrar + " " + unidad;
+
+
+                informacionStock.style.display =
+                    "block";
+
+
+                unidadCantidad.textContent =
+                    "Ingrese la cantidad utilizada en " +
+                    unidad +
+                    ".";
+
+            } else {
+
+                informacionStock.style.display =
+                    "none";
+
+
+                stockDisponible.textContent =
+                    "-";
+
+
+                unidadCantidad.textContent =
+                    "Selecciona un material para conocer su unidad.";
+
+            }
+
+        }
+    );
+
+
+    /* =========================================
+       VALIDACIÓN ANTES DE ENVIAR
+       ========================================= */
+
+    document
+        .getElementById("formulario-consumo")
+        .addEventListener(
+            "submit",
+            function(event) {
+
+                const opcionSeleccionada =
+                    selectorMaterial.options[
+                        selectorMaterial.selectedIndex
+                    ];
+
+
+                const stock =
+                    parseFloat(
+                        opcionSeleccionada.dataset.stock
+                    );
+
+
+                const cantidadTexto =
+                    campoCantidad
+                        .value
+                        .trim()
+                        .replace(",", ".");
+
+
+                const cantidad =
+                    parseFloat(cantidadTexto);
+
+
+                if (
+                    !Number.isFinite(cantidad) ||
+                    cantidad <= 0
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "La cantidad debe ser un número mayor que 0."
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    Number.isFinite(stock) &&
+                    cantidad > stock
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "La cantidad ingresada supera el stock disponible."
+                    );
+
+                    return;
+
+                }
+
+            }
+        );
+
+</script>
+
+{% endblock %}

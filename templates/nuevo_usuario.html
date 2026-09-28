@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Registrar Usuario - Promani
+{% endblock %}
+
+
+{% block content %}
+
+<div class="formulario-pagina">
+
+
+    <section class="formulario-encabezado">
+
+        <h2>
+            Registrar nuevo usuario
+        </h2>
+
+        <p>
+            Crea una cuenta para acceder al sistema
+            y asigna el nivel de permisos correspondiente.
+        </p>
+
+    </section>
+
+
+    <section class="formulario-card">
+
+
+        <div class="formulario-card-header">
+
+            <h3>
+                Información de acceso
+            </h3>
+
+            <p>
+                Ingresa las credenciales y selecciona
+                el rol que tendrá el nuevo usuario.
+            </p>
+
+        </div>
+
+
+        <div class="formulario-card-body">
+
+
+            <form
+                method="POST"
+                action="/nuevo-usuario"
+                class="formulario-promani"
+            >
+
+
+                <div class="formulario-grid">
+
+
+                    <!-- USUARIO -->
+
+                    <div class="campo-formulario">
+
+                        <label for="usuario">
+                            Nombre de usuario
+                        </label>
+
+                        <input
+                            type="text"
+                            id="usuario"
+                            name="usuario"
+                            placeholder="Ejemplo: operario1"
+                            autocomplete="off"
+                            required
+                        >
+
+                        <span class="ayuda-campo">
+                            Este nombre será utilizado para iniciar sesión.
+                        </span>
+
+                    </div>
+
+
+                    <!-- ROL -->
+
+                    <div class="campo-formulario">
+
+                        <label for="rol">
+                            Rol
+                        </label>
+
+                        <select
+                            id="rol"
+                            name="rol"
+                            required
+                        >
+
+                            <option value="">
+                                Seleccione un rol
+                            </option>
+
+                            <option value="operario">
+                                Operario
+                            </option>
+
+                            <option value="administrador">
+                                Administrador
+                            </option>
+
+                        </select>
+
+                        <span class="ayuda-campo">
+                            El rol determina las funciones disponibles.
+                        </span>
+
+                    </div>
+
+
+                    <!-- CONTRASEÑA -->
+
+                    <div class="campo-formulario campo-completo">
+
+                        <label for="contrasena">
+                            Contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            id="contrasena"
+                            name="contrasena"
+                            placeholder="Ingrese una contraseña"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                        <span class="ayuda-campo">
+                            La contraseña se almacena protegida dentro del sistema.
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="aviso-formulario">
+
+                    <strong>
+                        Importante:
+                    </strong>
+
+                    asigna el rol de administrador únicamente
+                    a usuarios que requieran acceso a compras,
+                    proveedores y gestión de cuentas.
+
+                </div>
+
+
+                <div class="formulario-acciones">
+
+                    <a
+                        href="/usuarios"
+                        class="boton-volver"
+                    >
+                        Volver
+                    </a>
+
+                    <button type="submit">
+                        Registrar usuario
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </section>
+
+
+</div>
+
+{% endblock %}

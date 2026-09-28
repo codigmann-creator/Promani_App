@@ -1,62 +1,347 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario - Promani</title>
+{% extends "base.html" %}
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+{% block title %}
+Inventario - Promani
+{% endblock %}
 
-<body>
 
-    <header>
-        <h1>Gestión de Inventario</h1>
-        <p>Promani</p>
-    </header>
+{% block content %}
 
-    <main>
+    <div class="inventario-contenedor">
 
-        <h2>Materiales registrados</h2>
-        <a href="/nuevo-material">Registrar nuevo material</a>
 
-        <br><br>
+        <!-- ENCABEZADO -->
 
-        <a href="/nuevo-consumo">Registrar consumo de material</a>
+        <section class="inventario-encabezado">
 
-        <br><br>
+            <h2>
+                Gestión de Inventario
+            </h2>
 
-        <a href="/consumos">Ver historial de consumos</a>
+            <p>
+                Desde esta sección puedes registrar materiales,
+                controlar su consumo y revisar los movimientos del inventario.
+            </p>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Material</th>
-                    <th>Unidad</th>
-                    <th>Stock actual</th>
-                    <th>Stock mínimo</th>
-                </tr>
-            </thead>
+        </section>
 
-            <tbody>
 
-                {% for material in materiales %}
+        <!-- CONTENIDO DE INVENTARIO -->
 
-                <tr>
-                    <td>{{ material["id"] }}</td>
-                    <td>{{ material["nombre"] }}</td>
-                    <td>{{ material["unidad"] }}</td>
-                    <td>{{ material["stock"] }}</td>
-                    <td>{{ material["stock_minimo"] }}</td>
-                </tr>
+        <section class="inventario-layout">
 
-                {% endfor %}
 
-            </tbody>
-        </table>
+            <!-- =====================================
+                 COLUMNA IZQUIERDA
+                 REGISTROS
+                 ===================================== -->
 
-    </main>
+            <aside class="inventario-panel inventario-lateral">
 
-</body>
-</html>
+                <h3 class="titulo-panel-inventario">
+                    Registros
+                </h3>
+
+
+                <div class="inventario-tarjetas">
+
+
+                    <!-- REGISTRAR MATERIAL -->
+
+                    <a
+                        href="/nuevo-material"
+                        class="acceso-card inventario-card"
+                    >
+
+                        <div class="acceso-contenido">
+
+                            <h3>
+                                Registrar material
+                            </h3>
+
+                            <p>
+                                Agregar un nuevo material al inventario,
+                                indicando su unidad, stock inicial y stock mínimo.
+                            </p>
+
+                        </div>
+
+                        <span class="acceso-ir">
+                            Registrar material →
+                        </span>
+
+                    </a>
+
+
+                    <!-- REGISTRAR CONSUMO -->
+
+                    <a
+                        href="/nuevo-consumo"
+                        class="acceso-card inventario-card"
+                    >
+
+                        <div class="acceso-contenido">
+
+                            <h3>
+                                Registrar consumo
+                            </h3>
+
+                            <p>
+                                Registrar materiales utilizados en un pedido
+                                y descontarlos automáticamente del stock.
+                            </p>
+
+                        </div>
+
+                        <span class="acceso-ir">
+                            Registrar consumo →
+                        </span>
+
+                    </a>
+
+
+                    <!-- REGISTRAR COMPRA
+                         SOLO ADMINISTRADOR -->
+
+                    {% if session["rol"] == "administrador" %}
+
+                        <a
+                            href="/nueva-compra"
+                            class="acceso-card inventario-card"
+                        >
+
+                            <div class="acceso-contenido">
+
+                                <h3>
+                                    Registrar compra
+                                </h3>
+
+                                <p>
+                                    Registrar compras de materiales
+                                    y aumentar automáticamente el stock disponible.
+                                </p>
+
+                            </div>
+
+                            <span class="acceso-ir">
+                                Registrar compra →
+                            </span>
+
+                        </a>
+
+                    {% endif %}
+
+
+                </div>
+
+            </aside>
+
+
+            <!-- =====================================
+                 COLUMNA CENTRAL
+                 MATERIALES
+                 ===================================== -->
+
+            <section class="inventario-panel inventario-central">
+
+                <h3 class="titulo-panel-inventario">
+                    Materiales registrados
+                </h3>
+
+
+                {% if materiales %}
+
+                    <div class="tabla-inventario">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Material</th>
+                                    <th>Unidad</th>
+                                    <th>Stock actual</th>
+                                    <th>Stock mínimo</th>
+                                    <th>Estado</th>
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                {% for material in materiales %}
+
+                                    <tr>
+
+                                        <td>
+                                            {{ material["id"] }}
+                                        </td>
+
+
+                                        <td>
+                                            {{ material["nombre"] }}
+                                        </td>
+
+
+                                        <td>
+                                            {{ material["unidad"] }}
+                                        </td>
+
+
+                                        <td>
+
+                                            {% if material["stock"] % 1 == 0 %}
+
+                                                {{ material["stock"] | int }}
+
+                                            {% else %}
+
+                                                {{ material["stock"] }}
+
+                                            {% endif %}
+
+                                        </td>
+
+
+                                        <td>
+
+                                            {% if material["stock_minimo"] % 1 == 0 %}
+
+                                                {{ material["stock_minimo"] | int }}
+
+                                            {% else %}
+
+                                                {{ material["stock_minimo"] }}
+
+                                            {% endif %}
+
+                                        </td>
+
+
+                                        <td>
+
+                                            {% if material["stock"] <= material["stock_minimo"] %}
+
+                                                <span class="estado estado-atrasado">
+                                                    Stock bajo
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="estado estado-terminado">
+                                                    Disponible
+                                                </span>
+
+                                            {% endif %}
+
+                                        </td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                {% else %}
+
+                    <p>
+                        Aún no existen materiales registrados.
+                    </p>
+
+                {% endif %}
+
+
+            </section>
+
+
+            <!-- =====================================
+                 COLUMNA DERECHA
+                 HISTORIALES
+                 ===================================== -->
+
+            <aside class="inventario-panel inventario-lateral">
+
+                <h3 class="titulo-panel-inventario">
+                    Historiales
+                </h3>
+
+
+                <div class="inventario-tarjetas">
+
+
+                    <!-- HISTORIAL DE CONSUMOS -->
+
+                    <a
+                        href="/consumos"
+                        class="acceso-card inventario-card"
+                    >
+
+                        <div class="acceso-contenido">
+
+                            <h3>
+                                Historial de consumos
+                            </h3>
+
+                            <p>
+                                Consultar los materiales utilizados,
+                                pedidos asociados, cantidades y fechas.
+                            </p>
+
+                        </div>
+
+                        <span class="acceso-ir">
+                            Ver historial →
+                        </span>
+
+                    </a>
+
+
+                    <!-- HISTORIAL DE COMPRAS
+                         SOLO ADMINISTRADOR -->
+
+                    {% if session["rol"] == "administrador" %}
+
+                        <a
+                            href="/compras"
+                            class="acceso-card inventario-card"
+                        >
+
+                            <div class="acceso-contenido">
+
+                                <h3>
+                                    Historial de compras
+                                </h3>
+
+                                <p>
+                                    Revisar compras realizadas,
+                                    proveedores, materiales y cantidades ingresadas.
+                                </p>
+
+                            </div>
+
+                            <span class="acceso-ir">
+                                Ver historial →
+                            </span>
+
+                        </a>
+
+                    {% endif %}
+
+
+                </div>
+
+            </aside>
+
+
+        </section>
+
+
+    </div>
+
+{% endblock %}

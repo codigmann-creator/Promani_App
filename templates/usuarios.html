@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Usuarios - Promani
+{% endblock %}
+
+
+{% block content %}
+
+<div class="pedidos-contenedor">
+
+
+    <section class="pedidos-encabezado">
+
+        <h2>
+            Gestión de Usuarios
+        </h2>
+
+        <p>
+            Administra las cuentas que pueden acceder al sistema
+            y controla los permisos según el rol asignado.
+        </p>
+
+    </section>
+
+
+    {% if request.args.get("restablecido") == "1" %}
+
+        <div class="aviso-formulario">
+
+            <strong>
+                Contraseña restablecida correctamente.
+            </strong>
+
+            El usuario ya puede iniciar sesión utilizando
+            su nueva contraseña.
+
+        </div>
+
+    {% endif %}
+
+
+    <section class="pedidos-layout">
+
+
+        <!-- ACCIONES -->
+
+        <aside class="pedidos-panel pedidos-lateral">
+
+            <h3 class="titulo-panel-pedidos">
+                Acciones
+            </h3>
+
+
+            <div class="pedidos-tarjetas">
+
+                <a
+                    href="/nuevo-usuario"
+                    class="acceso-card pedido-card"
+                >
+
+                    <div class="acceso-contenido">
+
+                        <h3>
+                            Registrar usuario
+                        </h3>
+
+                        <p>
+                            Crear una nueva cuenta y asignar
+                            permisos de administrador u operario.
+                        </p>
+
+                    </div>
+
+                    <span class="acceso-ir">
+                        Registrar usuario →
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            <div class="info-pedido">
+
+                <h4>
+                    Control de acceso
+                </h4>
+
+                <p>
+                    Los permisos disponibles dentro del sistema
+                    dependen del rol asignado a cada usuario.
+                </p>
+
+            </div>
+
+        </aside>
+
+
+        <!-- USUARIOS -->
+
+        <section class="pedidos-panel pedidos-central">
+
+            <h3 class="titulo-panel-pedidos">
+                Usuarios registrados
+            </h3>
+
+
+            {% if usuarios %}
+
+                <div class="tabla-pedidos">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for usuario in usuarios %}
+
+                                <tr>
+
+                                    <td>
+                                        {{ usuario["id"] }}
+                                    </td>
+
+
+                                    <td>
+                                        {{ usuario["usuario"] }}
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if usuario["rol"] == "administrador" %}
+
+                                            <span class="estado estado-produccion">
+                                                Administrador
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="estado estado-entregado">
+                                                Operario
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if usuario["id"] == session["usuario_id"] %}
+
+                                            <span class="estado estado-terminado">
+                                                Sesión actual
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="estado estado-entregado">
+                                                Activo
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if usuario["id"] != session["usuario_id"] %}
+
+                                            <a
+                                                href="/editar-usuario/{{ usuario['id'] }}"
+                                                class="enlace-editar"
+                                            >
+                                                Editar
+                                            </a>
+
+                                            &nbsp;
+
+                                            <a
+                                                href="/restablecer-contrasena/{{ usuario['id'] }}"
+                                                class="enlace-editar"
+                                            >
+                                                Restablecer contraseña
+                                            </a>
+
+                                            &nbsp;
+
+                                            <a
+                                                href="/eliminar-usuario/{{ usuario['id'] }}"
+                                                class="enlace-editar"
+                                            >
+                                                Eliminar
+                                            </a>
+
+                                        {% else %}
+
+                                            <span style="color: #71808a;">
+                                                Usuario actual
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <p>
+                    Aún no existen usuarios registrados.
+                </p>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- ROLES -->
+
+        <aside class="pedidos-panel pedidos-lateral">
+
+            <h3 class="titulo-panel-pedidos">
+                Roles
+            </h3>
+
+
+            <div class="lista-estados">
+
+                <div class="estado-item">
+
+                    <span class="estado estado-produccion">
+                        Administrador
+                    </span>
+
+                    <p>
+                        Tiene acceso completo al sistema,
+                        incluyendo proveedores, compras
+                        y administración de usuarios.
+                    </p>
+
+                </div>
+
+
+                <div class="estado-item">
+
+                    <span class="estado estado-entregado">
+                        Operario
+                    </span>
+
+                    <p>
+                        Puede trabajar con pedidos,
+                        inventario y consumos.
+                    </p>
+
+                </div>
+
+
+                <div class="estado-item">
+
+                    <span class="estado estado-terminado">
+                        Contraseñas
+                    </span>
+
+                    <p>
+                        Cada usuario puede cambiar su propia contraseña.
+                        El administrador puede restablecer la contraseña
+                        de otros usuarios.
+                    </p>
+
+                </div>
+
+
+                <div class="estado-item">
+
+                    <span class="estado estado-atrasado">
+                        Seguridad
+                    </span>
+
+                    <p>
+                        Las contraseñas no se almacenan directamente,
+                        sino mediante un hash de seguridad.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+    </section>
+
+</div>
+
+{% endblock %}

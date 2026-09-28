@@ -1,75 +1,252 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
 
-    <title>Editar Pedido - Promani</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+{% block title %}
+Editar Pedido - Promani
+{% endblock %}
 
-<body>
 
-    <header>
-        <h1>Editar Pedido</h1>
-        <p>Promani</p>
-    </header>
+{% block content %}
 
-    <main>
+<div class="formulario-pagina">
 
-        <h2>Actualizar estado del pedido</h2>
+
+    <section class="formulario-encabezado">
+
+        <h2>
+            Editar pedido
+        </h2>
 
         <p>
-            <strong>Pedido:</strong>
-            #{{ pedido["id"] }}
+            Consulta los datos del pedido y actualiza su fecha de entrega
+            o estado de producción.
         </p>
 
-        <p>
-            <strong>Cliente:</strong>
-            {{ pedido["cliente"] }}
-        </p>
+    </section>
 
-        <p>
-            <strong>Trabajo:</strong>
-            {{ pedido["descripcion"] }}
-        </p>
 
-        <form method="POST" action="/editar-pedido/{{ pedido['id'] }}">
+    <section class="formulario-card">
 
-            <label for="estado">Estado</label>
 
-            <select id="estado" name="estado" required>
+        <div class="formulario-card-header">
 
-                <option value="Pendiente"
-                    {% if pedido["estado"] == "Pendiente" %}selected{% endif %}>
-                    Pendiente
-                </option>
+            <h3>
+                Pedido N.º {{ pedido["id"] }}
+            </h3>
 
-                <option value="En producción"
-                    {% if pedido["estado"] == "En producción" %}selected{% endif %}>
-                    En producción
-                </option>
+            <p>
+                Información registrada y seguimiento del pedido.
+            </p>
 
-                <option value="Terminado"
-                    {% if pedido["estado"] == "Terminado" %}selected{% endif %}>
-                    Terminado
-                </option>
+        </div>
 
-                <option value="Entregado"
-                    {% if pedido["estado"] == "Entregado" %}selected{% endif %}>
-                    Entregado
-                </option>
 
-            </select>
+        <div class="formulario-card-body">
 
-            <button type="submit">
-                Guardar estado
-            </button>
 
-        </form>
+            <!-- RESUMEN DEL PEDIDO -->
 
-    </main>
+            <div class="resumen-pedido">
 
-</body>
-</html>
+
+                <div class="resumen-item">
+
+                    <span class="resumen-etiqueta">
+                        Cliente
+                    </span>
+
+                    <span class="resumen-valor">
+                        {{ pedido["cliente"] }}
+                    </span>
+
+                </div>
+
+
+                <div class="resumen-item">
+
+                    <span class="resumen-etiqueta">
+                        Medidas
+                    </span>
+
+                    <span class="resumen-valor">
+
+                        {% if pedido["medidas"] %}
+
+                            {{ pedido["medidas"] }}
+
+                        {% else %}
+
+                            Sin información
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="resumen-item resumen-item-completo">
+
+                    <span class="resumen-etiqueta">
+                        Descripción
+                    </span>
+
+                    <span class="resumen-valor">
+                        {{ pedido["descripcion"] }}
+                    </span>
+
+                </div>
+
+
+                <div class="resumen-item resumen-item-completo">
+
+                    <span class="resumen-etiqueta">
+                        Observaciones
+                    </span>
+
+                    <span class="resumen-valor">
+
+                        {% if pedido["observaciones"] %}
+
+                            {{ pedido["observaciones"] }}
+
+                        {% else %}
+
+                            Sin observaciones
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="aviso-formulario">
+                Puedes actualizar la fecha comprometida y el estado actual del pedido.
+                Los demás datos permanecen como información original del trabajo.
+            </div>
+
+
+            <!-- FORMULARIO -->
+
+            <form
+                method="POST"
+                action="/editar-pedido/{{ pedido['id'] }}"
+                class="formulario-promani"
+            >
+
+
+                <div class="formulario-grid">
+
+
+                    <!-- FECHA -->
+
+                    <div class="campo-formulario">
+
+                        <label for="fecha_entrega">
+                            Fecha de entrega
+                        </label>
+
+                        <input
+                            type="date"
+                            id="fecha_entrega"
+                            name="fecha_entrega"
+                            value="{{ pedido['fecha_entrega'] or '' }}"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- ESTADO -->
+
+                    <div class="campo-formulario">
+
+                        <label for="estado">
+                            Estado del pedido
+                        </label>
+
+                        <select
+                            id="estado"
+                            name="estado"
+                            required
+                        >
+
+                            <option
+                                value="Pendiente"
+                                {% if pedido["estado"] == "Pendiente" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Pendiente
+                            </option>
+
+
+                            <option
+                                value="En producción"
+                                {% if pedido["estado"] == "En producción" %}
+                                    selected
+                                {% endif %}
+                            >
+                                En producción
+                            </option>
+
+
+                            <option
+                                value="Terminado"
+                                {% if pedido["estado"] == "Terminado" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Terminado
+                            </option>
+
+
+                            <option
+                                value="Entregado"
+                                {% if pedido["estado"] == "Entregado" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Entregado
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="formulario-acciones">
+
+                    <a
+                        href="/pedidos"
+                        class="boton-volver"
+                    >
+                        Volver
+                    </a>
+
+
+                    <button type="submit">
+                        Guardar cambios
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </section>
+
+
+</div>
+
+{% endblock %}

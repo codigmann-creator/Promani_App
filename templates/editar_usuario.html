@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Editar Usuario - Promani
+{% endblock %}
+
+
+{% block content %}
+
+<div class="formulario-pagina">
+
+
+    <section class="formulario-encabezado">
+
+        <h2>
+            Editar usuario
+        </h2>
+
+        <p>
+            Modifica el nivel de acceso asignado
+            al usuario seleccionado.
+        </p>
+
+    </section>
+
+
+    <section class="formulario-card">
+
+
+        <div class="formulario-card-header">
+
+            <h3>
+                {{ usuario["usuario"] }}
+            </h3>
+
+            <p>
+                Administración de permisos del usuario.
+            </p>
+
+        </div>
+
+
+        <div class="formulario-card-body">
+
+
+            <!-- RESUMEN -->
+
+            <div class="resumen-pedido">
+
+
+                <div class="resumen-item">
+
+                    <span class="resumen-etiqueta">
+                        Usuario
+                    </span>
+
+                    <span class="resumen-valor">
+                        {{ usuario["usuario"] }}
+                    </span>
+
+                </div>
+
+
+                <div class="resumen-item">
+
+                    <span class="resumen-etiqueta">
+                        Rol actual
+                    </span>
+
+                    <span class="resumen-valor">
+
+                        {% if usuario["rol"] == "administrador" %}
+
+                            Administrador
+
+                        {% else %}
+
+                            Operario
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+            <form
+                method="POST"
+                action="/editar-usuario/{{ usuario['id'] }}"
+                class="formulario-promani"
+            >
+
+
+                <div class="formulario-grid">
+
+
+                    <div class="campo-formulario campo-completo">
+
+                        <label for="rol">
+                            Nuevo rol
+                        </label>
+
+                        <select
+                            id="rol"
+                            name="rol"
+                            required
+                        >
+
+                            <option
+                                value="operario"
+                                {% if usuario["rol"] == "operario" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Operario
+                            </option>
+
+
+                            <option
+                                value="administrador"
+                                {% if usuario["rol"] == "administrador" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Administrador
+                            </option>
+
+                        </select>
+
+                        <span class="ayuda-campo">
+                            Cambiar el rol modificará las funciones
+                            a las que este usuario puede acceder.
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="aviso-formulario">
+
+                    <strong>
+                        Cambio de permisos:
+                    </strong>
+
+                    un administrador tiene acceso a funciones
+                    adicionales como proveedores, compras
+                    y gestión de usuarios.
+
+                </div>
+
+
+                <div class="formulario-acciones">
+
+                    <a
+                        href="/usuarios"
+                        class="boton-volver"
+                    >
+                        Volver
+                    </a>
+
+                    <button type="submit">
+                        Guardar cambios
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </section>
+
+
+</div>
+
+{% endblock %}

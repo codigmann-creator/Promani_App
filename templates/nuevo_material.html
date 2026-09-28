@@ -1,68 +1,301 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuevo Material - Promani</title>
+{% extends "base.html" %}
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
 
-<body>
+{% block title %}
+Registrar Material - Promani
+{% endblock %}
 
-    <header>
-        <h1>Nuevo Material</h1>
-        <p>Promani</p>
-    </header>
 
-    <main>
+{% block content %}
 
-        <h2>Registrar material</h2>
+<div class="formulario-pagina">
 
-        <form method="POST" action="/nuevo-material">
 
-            <label for="nombre">Nombre del material</label>
-            <input
-                type="text"
-                id="nombre"
-                name="nombre"
-                required
+    <!-- ENCABEZADO -->
+
+    <section class="formulario-encabezado">
+
+        <h2>
+            Registrar nuevo material
+        </h2>
+
+        <p>
+            Agrega un nuevo material al inventario indicando
+            su unidad de medida, stock inicial y nivel mínimo de reposición.
+        </p>
+
+    </section>
+
+
+    <!-- TARJETA PRINCIPAL -->
+
+    <section class="formulario-card">
+
+
+        <div class="formulario-card-header">
+
+            <h3>
+                Información del material
+            </h3>
+
+            <p>
+                Completa los datos necesarios para incorporar
+                el material al inventario de Promani.
+            </p>
+
+        </div>
+
+
+        <div class="formulario-card-body">
+
+
+            <form
+                method="POST"
+                action="/nuevo-material"
+                class="formulario-promani"
+                id="formulario-material"
             >
 
-            <label for="unidad">Unidad de medida</label>
-            <select id="unidad" name="unidad" required>
-                <option value="">Seleccione una unidad</option>
-                <option value="Unidad">Unidad</option>
-                <option value="Metro">Metro</option>
-                <option value="Kilogramo">Kilogramo</option>
-                <option value="Plancha">Plancha</option>
-            </select>
 
-            <label for="stock">Stock actual</label>
-            <input
-                type="number"
-                id="stock"
-                name="stock"
-                min="0"
-                step="0.01"
-                required
-            >
+                <div class="formulario-grid">
 
-            <label for="stock_minimo">Stock mínimo</label>
-            <input
-                type="number"
-                id="stock_minimo"
-                name="stock_minimo"
-                min="0"
-                step="0.01"
-                required
-            >
 
-            <button type="submit">Guardar material</button>
+                    <!-- NOMBRE -->
 
-        </form>
+                    <div class="campo-formulario campo-completo">
 
-    </main>
+                        <label for="nombre">
+                            Nombre del material
+                        </label>
 
-</body>
-</html>
+                        <input
+                            type="text"
+                            id="nombre"
+                            name="nombre"
+                            placeholder="Ejemplo: Plancha acero inoxidable 304"
+                            required
+                        >
+
+                        <span class="ayuda-campo">
+                            Utiliza un nombre que permita identificar fácilmente el material.
+                        </span>
+
+                    </div>
+
+
+                    <!-- UNIDAD -->
+
+                    <div class="campo-formulario">
+
+                        <label for="unidad">
+                            Unidad de medida
+                        </label>
+
+                        <select
+                            id="unidad"
+                            name="unidad"
+                            required
+                        >
+
+                            <option value="">
+                                Seleccione una unidad
+                            </option>
+
+                            <option value="Unidad">
+                                Unidad
+                            </option>
+
+                            <option value="Plancha">
+                                Plancha
+                            </option>
+
+                            <option value="Metro">
+                                Metro
+                            </option>
+
+                            <option value="Kilogramo">
+                                Kilogramo
+                            </option>
+
+                            <option value="Caja">
+                                Caja
+                            </option>
+
+                            <option value="Paquete">
+                                Paquete
+                            </option>
+
+                        </select>
+
+                        <span class="ayuda-campo">
+                            Unidad utilizada para controlar el stock.
+                        </span>
+
+                    </div>
+
+
+                    <!-- STOCK INICIAL -->
+
+                    <div class="campo-formulario">
+
+                        <label for="stock">
+                            Stock inicial
+                        </label>
+
+                        <input
+                            type="text"
+                            id="stock"
+                            name="stock"
+                            inputmode="decimal"
+                            placeholder="Ejemplo: 20"
+                            required
+                        >
+
+                        <span class="ayuda-campo">
+                            Cantidad actualmente disponible.
+                        </span>
+
+                    </div>
+
+
+                    <!-- STOCK MÍNIMO -->
+
+                    <div class="campo-formulario">
+
+                        <label for="stock_minimo">
+                            Stock mínimo
+                        </label>
+
+                        <input
+                            type="text"
+                            id="stock_minimo"
+                            name="stock_minimo"
+                            inputmode="decimal"
+                            placeholder="Ejemplo: 5"
+                            required
+                        >
+
+                        <span class="ayuda-campo">
+                            Cuando el stock llegue a este nivel,
+                            el sistema lo mostrará como stock bajo.
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- AVISO -->
+
+                <div class="aviso-formulario">
+
+                    <strong>
+                        Control de inventario:
+                    </strong>
+
+                    el stock inicial representa la cantidad disponible actualmente,
+                    mientras que el stock mínimo permite identificar cuándo es
+                    necesario considerar una reposición.
+
+                </div>
+
+
+                <!-- BOTONES -->
+
+                <div class="formulario-acciones">
+
+                    <a
+                        href="/inventario"
+                        class="boton-volver"
+                    >
+                        Volver
+                    </a>
+
+                    <button type="submit">
+                        Registrar material
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </section>
+
+
+</div>
+
+
+<script>
+
+    document
+        .getElementById("formulario-material")
+        .addEventListener(
+            "submit",
+            function(event) {
+
+                const stockTexto =
+                    document
+                        .getElementById("stock")
+                        .value
+                        .trim()
+                        .replace(",", ".");
+
+
+                const stockMinimoTexto =
+                    document
+                        .getElementById("stock_minimo")
+                        .value
+                        .trim()
+                        .replace(",", ".");
+
+
+                const stock =
+                    Number(stockTexto);
+
+
+                const stockMinimo =
+                    Number(stockMinimoTexto);
+
+
+                if (
+                    !Number.isFinite(stock) ||
+                    stock < 0
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "El stock inicial debe ser un número igual o mayor que 0."
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    !Number.isFinite(stockMinimo) ||
+                    stockMinimo < 0
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "El stock mínimo debe ser un número igual o mayor que 0."
+                    );
+
+                    return;
+
+                }
+
+            }
+        );
+
+</script>
+
+{% endblock %}

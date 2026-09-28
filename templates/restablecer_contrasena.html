@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Restablecer Contraseña - Promani
+{% endblock %}
+
+
+{% block content %}
+
+<div class="formulario-pagina">
+
+
+    <section class="formulario-encabezado">
+
+        <h2>
+            Restablecer contraseña
+        </h2>
+
+        <p>
+            Asigna una nueva contraseña al usuario seleccionado.
+        </p>
+
+    </section>
+
+
+    <section class="formulario-card">
+
+
+        <div class="formulario-card-header">
+
+            <h3>
+                {{ usuario["usuario"] }}
+            </h3>
+
+            <p>
+                Restablecimiento de credenciales de acceso.
+            </p>
+
+        </div>
+
+
+        <div class="formulario-card-body">
+
+
+            <div class="resumen-pedido">
+
+
+                <div class="resumen-item">
+
+                    <span class="resumen-etiqueta">
+                        Usuario
+                    </span>
+
+                    <span class="resumen-valor">
+                        {{ usuario["usuario"] }}
+                    </span>
+
+                </div>
+
+
+                <div class="resumen-item">
+
+                    <span class="resumen-etiqueta">
+                        Rol
+                    </span>
+
+                    <span class="resumen-valor">
+
+                        {% if usuario["rol"] == "administrador" %}
+
+                            Administrador
+
+                        {% else %}
+
+                            Operario
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+            {% if error %}
+
+                <div class="aviso-formulario">
+
+                    <span class="estado estado-atrasado">
+                        Error
+                    </span>
+
+                    <br><br>
+
+                    {{ error }}
+
+                </div>
+
+            {% endif %}
+
+
+            <form
+                method="POST"
+                action="/restablecer-contrasena/{{ usuario['id'] }}"
+                class="formulario-promani"
+            >
+
+
+                <div class="formulario-grid">
+
+
+                    <div class="campo-formulario">
+
+                        <label for="nueva_contrasena">
+                            Nueva contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            id="nueva_contrasena"
+                            name="nueva_contrasena"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        >
+
+                        <span class="ayuda-campo">
+                            Debe contener al menos 6 caracteres.
+                        </span>
+
+                    </div>
+
+
+                    <div class="campo-formulario">
+
+                        <label for="confirmar_contrasena">
+                            Confirmar contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            id="confirmar_contrasena"
+                            name="confirmar_contrasena"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        >
+
+                        <span class="ayuda-campo">
+                            Repite exactamente la nueva contraseña.
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="aviso-formulario">
+
+                    <strong>
+                        Importante:
+                    </strong>
+
+                    después de restablecer la contraseña,
+                    comunica la nueva credencial directamente
+                    al usuario correspondiente.
+
+                </div>
+
+
+                <div class="formulario-acciones">
+
+                    <a
+                        href="/usuarios"
+                        class="boton-volver"
+                    >
+                        Cancelar
+                    </a>
+
+                    <button type="submit">
+                        Restablecer contraseña
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </section>
+
+
+</div>
+
+{% endblock %}
