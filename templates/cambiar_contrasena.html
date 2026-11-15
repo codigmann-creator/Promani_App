@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Cambiar Contraseña - Promani
+{% endblock %}
+
+
+{% block content %}
+
+<div class="formulario-pagina">
+
+
+    <section class="formulario-encabezado">
+
+        <h2>
+            Cambiar contraseña
+        </h2>
+
+        <p>
+            Actualiza la contraseña utilizada
+            para ingresar a tu cuenta.
+        </p>
+
+    </section>
+
+
+    <section class="formulario-card">
+
+
+        <div class="formulario-card-header">
+
+            <h3>
+                Seguridad de la cuenta
+            </h3>
+
+            <p>
+                Usuario: {{ session["usuario"] }}
+            </p>
+
+        </div>
+
+
+        <div class="formulario-card-body">
+
+
+            {% if request.args.get("exito") == "1" %}
+
+                <div class="aviso-formulario">
+
+                    <span class="estado estado-terminado">
+                        Contraseña actualizada
+                    </span>
+
+                    <br><br>
+
+                    Tu contraseña fue cambiada correctamente.
+                    Utilízala la próxima vez que inicies sesión.
+
+                </div>
+
+            {% endif %}
+
+
+            {% if error %}
+
+                <div class="aviso-formulario">
+
+                    <span class="estado estado-atrasado">
+                        Error
+                    </span>
+
+                    <br><br>
+
+                    {{ error }}
+
+                </div>
+
+            {% endif %}
+
+
+            <form
+                method="POST"
+                action="/cambiar-contrasena"
+                class="formulario-promani"
+            >
+
+
+                <div class="formulario-grid">
+
+
+                    <div class="campo-formulario campo-completo">
+
+                        <label for="contrasena_actual">
+                            Contraseña actual
+                        </label>
+
+                        <input
+                            type="password"
+                            id="contrasena_actual"
+                            name="contrasena_actual"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <span class="ayuda-campo">
+                            Confirma tu identidad ingresando
+                            la contraseña que utilizas actualmente.
+                        </span>
+
+                    </div>
+
+
+                    <div class="campo-formulario">
+
+                        <label for="nueva_contrasena">
+                            Nueva contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            id="nueva_contrasena"
+                            name="nueva_contrasena"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        >
+
+                        <span class="ayuda-campo">
+                            Debe contener al menos 6 caracteres.
+                        </span>
+
+                    </div>
+
+
+                    <div class="campo-formulario">
+
+                        <label for="confirmar_contrasena">
+                            Confirmar nueva contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            id="confirmar_contrasena"
+                            name="confirmar_contrasena"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        >
+
+                        <span class="ayuda-campo">
+                            Repite exactamente la nueva contraseña.
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="aviso-formulario">
+
+                    <strong>
+                        Seguridad:
+                    </strong>
+
+                    tu contraseña no se almacena como texto visible.
+                    El sistema guarda únicamente una versión protegida
+                    mediante hash.
+
+                </div>
+
+
+                <div class="formulario-acciones">
+
+                    <a
+                        href="/"
+                        class="boton-volver"
+                    >
+                        Volver
+                    </a>
+
+                    <button type="submit">
+                        Cambiar contraseña
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </section>
+
+
+</div>
+
+{% endblock %}

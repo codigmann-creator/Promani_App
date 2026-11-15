@@ -1,23 +1,63 @@
-{% extends "base.html" %}
 
+{% extends "base.html" %}
 
 {% block title %}
 Registrar Consumo - Promani
 {% endblock %}
 
-
 {% block content %}
 
-<div class="formulario-pagina">
+<style>
+    /* Advertencia de validación */
 
+    .consumo-advertencia {
+        display: none;
+        margin-top: 10px;
+        padding: 12px 15px;
+        border: 1px solid #f3b0b0;
+        border-left: 4px solid #dc2626;
+        border-radius: 8px;
+        background-color: #fff1f2;
+        color: #991b1b;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .consumo-advertencia.visible {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .consumo-advertencia-icono {
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .consumo-advertencia strong {
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .formulario-promani input.consumo-campo-error {
+        border: 2px solid #dc2626 !important;
+        background-color: #fffafa;
+    }
+
+    .formulario-promani input.consumo-campo-error:focus {
+        outline: 2px solid #fca5a5;
+        outline-offset: 1px;
+    }
+</style>
+
+
+<div class="formulario-pagina">
 
     <!-- ENCABEZADO -->
 
     <section class="formulario-encabezado">
 
-        <h2>
-            Registrar consumo de material
-        </h2>
+        <h2>Registrar consumo de material</h2>
 
         <p>
             Registra los materiales utilizados en un pedido.
@@ -32,12 +72,9 @@ Registrar Consumo - Promani
 
     <section class="formulario-card">
 
-
         <div class="formulario-card-header">
 
-            <h3>
-                Información del consumo
-            </h3>
+            <h3>Información del consumo</h3>
 
             <p>
                 Selecciona el pedido, el material utilizado
@@ -49,7 +86,6 @@ Registrar Consumo - Promani
 
         <div class="formulario-card-body">
 
-
             <form
                 method="POST"
                 action="/nuevo-consumo"
@@ -57,13 +93,9 @@ Registrar Consumo - Promani
                 id="formulario-consumo"
             >
 
-
                 <div class="formulario-grid">
 
-
-                    <!-- =====================================
-                         PEDIDO
-                         ===================================== -->
+                    <!-- PEDIDO -->
 
                     <div class="campo-formulario campo-completo">
 
@@ -81,21 +113,17 @@ Registrar Consumo - Promani
                                 Seleccione un pedido
                             </option>
 
-
                             {% for pedido in pedidos %}
 
                                 <option value="{{ pedido['id'] }}">
-
                                     Pedido #{{ pedido["id"] }}
                                     - {{ pedido["cliente"] }}
                                     - {{ pedido["descripcion"] }}
-
                                 </option>
 
                             {% endfor %}
 
                         </select>
-
 
                         <span class="ayuda-campo">
                             Selecciona el pedido en el que se utilizó el material.
@@ -104,9 +132,7 @@ Registrar Consumo - Promani
                     </div>
 
 
-                    <!-- =====================================
-                         MATERIAL
-                         ===================================== -->
+                    <!-- MATERIAL -->
 
                     <div class="campo-formulario">
 
@@ -128,7 +154,6 @@ Registrar Consumo - Promani
                                 Seleccione un material
                             </option>
 
-
                             {% for material in materiales %}
 
                                 <option
@@ -142,25 +167,18 @@ Registrar Consumo - Promani
                                     -
 
                                     {% if material["stock"] % 1 == 0 %}
-
                                         {{ material["stock"] | int }}
-
                                     {% else %}
-
                                         {{ material["stock"] }}
-
                                     {% endif %}
 
-                                    {{ material["unidad"] }}
-
-                                    disponibles
+                                    {{ material["unidad"] }} disponibles
 
                                 </option>
 
                             {% endfor %}
 
                         </select>
-
 
                         <span class="ayuda-campo">
                             Solo se puede consumir stock actualmente disponible.
@@ -169,9 +187,7 @@ Registrar Consumo - Promani
                     </div>
 
 
-                    <!-- =====================================
-                         CANTIDAD
-                         ===================================== -->
+                    <!-- CANTIDAD -->
 
                     <div class="campo-formulario">
 
@@ -186,6 +202,7 @@ Registrar Consumo - Promani
                             inputmode="decimal"
                             placeholder="Ejemplo: 2,5"
                             required
+                            aria-describedby="unidad-cantidad advertencia-consumo"
                         >
 
                         <span
@@ -195,8 +212,33 @@ Registrar Consumo - Promani
                             Selecciona un material para conocer su unidad.
                         </span>
 
-                    </div>
 
+                        <!-- ADVERTENCIA DENTRO DEL FORMULARIO -->
+
+                        <div
+                            class="consumo-advertencia"
+                            id="advertencia-consumo"
+                            role="alert"
+                            aria-live="polite"
+                        >
+
+                            <span class="consumo-advertencia-icono">
+                                ⚠
+                            </span>
+
+                            <div>
+
+                                <strong id="advertencia-titulo">
+                                    Stock insuficiente
+                                </strong>
+
+                                <span id="advertencia-texto"></span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
@@ -224,7 +266,6 @@ Registrar Consumo - Promani
 
                 <div class="formulario-acciones">
 
-
                     <a
                         href="/inventario"
                         class="boton-volver"
@@ -232,27 +273,25 @@ Registrar Consumo - Promani
                         Volver
                     </a>
 
-
                     <button type="submit">
                         Registrar consumo
                     </button>
 
-
                 </div>
 
-
             </form>
-
 
         </div>
 
     </section>
 
-
 </div>
 
 
 <script>
+
+    const formularioConsumo =
+        document.getElementById("formulario-consumo");
 
     const selectorMaterial =
         document.getElementById("material_id");
@@ -269,66 +308,233 @@ Registrar Consumo - Promani
     const unidadCantidad =
         document.getElementById("unidad-cantidad");
 
+    const advertenciaConsumo =
+        document.getElementById("advertencia-consumo");
 
-    /* =========================================
-       MOSTRAR STOCK DEL MATERIAL
-       ========================================= */
+    const advertenciaTitulo =
+        document.getElementById("advertencia-titulo");
 
-    selectorMaterial.addEventListener(
-        "change",
-        function() {
-
-            const opcionSeleccionada =
-                selectorMaterial.options[
-                    selectorMaterial.selectedIndex
-                ];
+    const advertenciaTexto =
+        document.getElementById("advertencia-texto");
 
 
-            const stock =
-                opcionSeleccionada.dataset.stock;
+    // FORMATEAR CANTIDADES
 
-            const unidad =
-                opcionSeleccionada.dataset.unidad;
+    function formatearCantidad(numero) {
 
+        return numero.toLocaleString("es-CL", {
+            maximumFractionDigits: 10
+        });
 
-            if (stock !== "") {
-
-                let stockMostrar = Number(stock);
-
-
-                if (Number.isInteger(stockMostrar)) {
-
-                    stockMostrar =
-                        stockMostrar.toString();
-
-                }
+    }
 
 
-                stockDisponible.textContent =
-                    stockMostrar + " " + unidad;
+    // MOSTRAR ADVERTENCIA
+
+    function mostrarAdvertencia(titulo, mensaje) {
+
+        advertenciaTitulo.textContent = titulo;
+
+        advertenciaTexto.textContent = mensaje;
+
+        advertenciaConsumo.classList.add("visible");
+
+        campoCantidad.classList.add("consumo-campo-error");
+
+        campoCantidad.setAttribute("aria-invalid", "true");
+
+    }
 
 
-                informacionStock.style.display =
-                    "block";
+    // OCULTAR ADVERTENCIA
+
+    function ocultarAdvertencia() {
+
+        advertenciaConsumo.classList.remove("visible");
+
+        advertenciaTitulo.textContent = "";
+
+        advertenciaTexto.textContent = "";
+
+        campoCantidad.classList.remove("consumo-campo-error");
+
+        campoCantidad.removeAttribute("aria-invalid");
+
+    }
 
 
-                unidadCantidad.textContent =
-                    "Ingrese la cantidad utilizada en " +
-                    unidad +
-                    ".";
+    // OBTENER MATERIAL SELECCIONADO
+
+    function obtenerMaterial() {
+
+        return selectorMaterial.options[
+            selectorMaterial.selectedIndex
+        ];
+
+    }
+
+
+    // VALIDAR CANTIDAD
+
+    function validarCantidad(mostrarError = true) {
+
+        const textoOriginal = campoCantidad.value.trim();
+
+        if (textoOriginal === "") {
+
+            ocultarAdvertencia();
+
+            return false;
+
+        }
+
+        const textoNormalizado =
+            textoOriginal.replace(",", ".");
+
+        const formatoValido =
+            /^(?:\d+(?:\.\d*)?|\.\d+)$/.test(
+                textoNormalizado
+            );
+
+        const cantidad = Number(textoNormalizado);
+
+        if (
+            !formatoValido ||
+            !Number.isFinite(cantidad) ||
+            cantidad <= 0
+        ) {
+
+            if (mostrarError) {
+
+                mostrarAdvertencia(
+                    "Cantidad no válida",
+                    "Ingresa un número mayor que cero."
+                );
 
             } else {
 
-                informacionStock.style.display =
-                    "none";
+                ocultarAdvertencia();
+
+            }
+
+            return false;
+
+        }
+
+        const opcion = obtenerMaterial();
+
+        if (!opcion.value) {
+
+            ocultarAdvertencia();
+
+            return false;
+
+        }
+
+        const stock = Number(opcion.dataset.stock);
+
+        const unidad = opcion.dataset.unidad || "unidades";
+
+        if (
+            Number.isFinite(stock) &&
+            cantidad > stock
+        ) {
+
+            if (mostrarError) {
+
+                mostrarAdvertencia(
+                    "Stock insuficiente",
+                    "La cantidad ingresada (" +
+                    formatearCantidad(cantidad) + " " + unidad +
+                    ") supera el stock disponible (" +
+                    formatearCantidad(stock) + " " + unidad +
+                    "). Ingresa una cantidad menor o igual al stock disponible."
+                );
+
+            }
+
+            return false;
+
+        }
+
+        ocultarAdvertencia();
+
+        return true;
+
+    }
 
 
-                stockDisponible.textContent =
-                    "-";
+    // ACTUALIZAR INFORMACIÓN DEL MATERIAL
+
+    function actualizarMaterial() {
+
+        const opcion = obtenerMaterial();
+
+        const stockTexto = opcion.dataset.stock;
+
+        const unidad = opcion.dataset.unidad;
+
+        if (opcion.value && stockTexto !== "") {
+
+            const stock = Number(stockTexto);
+
+            stockDisponible.textContent =
+                formatearCantidad(stock) + " " + unidad;
+
+            informacionStock.style.display = "block";
+
+            unidadCantidad.textContent =
+                "Ingrese la cantidad utilizada en " +
+                unidad + ".";
+
+        } else {
+
+            informacionStock.style.display = "none";
+
+            stockDisponible.textContent = "-";
+
+            unidadCantidad.textContent =
+                "Selecciona un material para conocer su unidad.";
+
+        }
+
+        validarCantidad();
+
+    }
 
 
-                unidadCantidad.textContent =
-                    "Selecciona un material para conocer su unidad.";
+    // VALIDAR AL CAMBIAR MATERIAL
+
+    selectorMaterial.addEventListener(
+        "change",
+        actualizarMaterial
+    );
+
+
+    // VALIDAR MIENTRAS SE ESCRIBE
+
+    campoCantidad.addEventListener(
+        "input",
+        function() {
+
+            if (campoCantidad.value.trim() === "") {
+
+                ocultarAdvertencia();
+
+                return;
+
+            }
+
+            validarCantidad(false);
+
+            const opcion = obtenerMaterial();
+
+            if (
+                opcion.value &&
+                campoCantidad.value.trim() !== ""
+            ) {
+
+                validarCantidad(true);
 
             }
 
@@ -336,72 +542,31 @@ Registrar Consumo - Promani
     );
 
 
-    /* =========================================
-       VALIDACIÓN ANTES DE ENVIAR
-       ========================================= */
+    // VALIDAR ANTES DE REGISTRAR
 
-    document
-        .getElementById("formulario-consumo")
-        .addEventListener(
-            "submit",
-            function(event) {
+    formularioConsumo.addEventListener(
+        "submit",
+        function(event) {
 
-                const opcionSeleccionada =
-                    selectorMaterial.options[
-                        selectorMaterial.selectedIndex
-                    ];
+            if (!validarCantidad(true)) {
 
+                event.preventDefault();
 
-                const stock =
-                    parseFloat(
-                        opcionSeleccionada.dataset.stock
-                    );
+                if (campoCantidad.value.trim() !== "") {
 
-
-                const cantidadTexto =
-                    campoCantidad
-                        .value
-                        .trim()
-                        .replace(",", ".");
-
-
-                const cantidad =
-                    parseFloat(cantidadTexto);
-
-
-                if (
-                    !Number.isFinite(cantidad) ||
-                    cantidad <= 0
-                ) {
-
-                    event.preventDefault();
-
-                    alert(
-                        "La cantidad debe ser un número mayor que 0."
-                    );
-
-                    return;
-
-                }
-
-
-                if (
-                    Number.isFinite(stock) &&
-                    cantidad > stock
-                ) {
-
-                    event.preventDefault();
-
-                    alert(
-                        "La cantidad ingresada supera el stock disponible."
-                    );
-
-                    return;
+                    campoCantidad.focus();
 
                 }
 
             }
-        );
+
+        }
+    );
+
+
+    // ESTADO INICIAL
+
+    actualizarMaterial();
 
 </script>
 

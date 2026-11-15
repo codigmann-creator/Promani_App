@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -34,7 +35,6 @@
     <header class="encabezado-principal">
 
         <div class="encabezado-contenido">
-
 
             <!-- MARCA -->
 
@@ -78,7 +78,6 @@
                 ☰
             </button>
 
-
         </div>
 
 
@@ -104,25 +103,12 @@
             </a>
 
 
-            <a href="/consumos">
-                Consumos
-            </a>
-
+            <!-- OPCIONES EXCLUSIVAS DEL ADMINISTRADOR -->
 
             {% if session["rol"] == "administrador" %}
 
                 <a href="/proveedores">
                     Proveedores
-                </a>
-
-
-                <a href="/nueva-compra">
-                    Registrar compra
-                </a>
-
-
-                <a href="/compras">
-                    Historial de compras
                 </a>
 
 
@@ -144,7 +130,6 @@
             >
                 Cerrar sesión
             </a>
-
 
         </nav>
 
@@ -201,8 +186,8 @@
 
 
         /*
-        CERRAR EL MENÚ DESPUÉS DE PRESIONAR
-        UNA OPCIÓN EN CELULAR
+           CERRAR EL MENÚ DESPUÉS DE PRESIONAR
+           UNA OPCIÓN EN CELULAR
         */
 
         const enlacesMenu =
@@ -240,7 +225,6 @@
         );
 
     </script>
-
 
 </body>
 

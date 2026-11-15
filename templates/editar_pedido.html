@@ -18,8 +18,8 @@ Editar Pedido - Promani
         </h2>
 
         <p>
-            Consulta los datos del pedido y actualiza su fecha de entrega
-            o estado de producción.
+            Consulta los datos del pedido y actualiza sus medidas,
+            fecha de entrega o estado de producción.
         </p>
 
     </section>
@@ -65,7 +65,7 @@ Editar Pedido - Promani
                 <div class="resumen-item">
 
                     <span class="resumen-etiqueta">
-                        Medidas
+                        Medidas actuales
                     </span>
 
                     <span class="resumen-valor">
@@ -125,8 +125,9 @@ Editar Pedido - Promani
 
 
             <div class="aviso-formulario">
-                Puedes actualizar la fecha comprometida y el estado actual del pedido.
-                Los demás datos permanecen como información original del trabajo.
+                Puedes modificar las medidas, la fecha comprometida y el estado actual
+                del pedido. Las medidas se guardarán en el formato
+                Largo × Ancho × Alto en centímetros.
             </div>
 
 
@@ -136,13 +137,86 @@ Editar Pedido - Promani
                 method="POST"
                 action="/editar-pedido/{{ pedido['id'] }}"
                 class="formulario-promani"
+                id="formulario-editar-pedido"
             >
 
 
                 <div class="formulario-grid">
 
 
-                    <!-- FECHA -->
+                    <!-- LARGO -->
+
+                    <div class="campo-formulario">
+
+                        <label for="largo">
+                            Largo
+                        </label>
+
+                        <input
+                            type="text"
+                            id="largo"
+                            inputmode="decimal"
+                            placeholder="Ejemplo: 180"
+                            pattern="[0-9]+([.,][0-9]+)?"
+                            title="Ingresa un número, por ejemplo 180 o 180,5"
+                        >
+
+                        <span class="ayuda-campo">
+                            Medida en centímetros.
+                        </span>
+
+                    </div>
+
+
+                    <!-- ANCHO -->
+
+                    <div class="campo-formulario">
+
+                        <label for="ancho">
+                            Ancho / Profundidad
+                        </label>
+
+                        <input
+                            type="text"
+                            id="ancho"
+                            inputmode="decimal"
+                            placeholder="Ejemplo: 70"
+                            pattern="[0-9]+([.,][0-9]+)?"
+                            title="Ingresa un número, por ejemplo 70 o 70,5"
+                        >
+
+                        <span class="ayuda-campo">
+                            Medida en centímetros.
+                        </span>
+
+                    </div>
+
+
+                    <!-- ALTO -->
+
+                    <div class="campo-formulario">
+
+                        <label for="alto">
+                            Alto
+                        </label>
+
+                        <input
+                            type="text"
+                            id="alto"
+                            inputmode="decimal"
+                            placeholder="Ejemplo: 90"
+                            pattern="[0-9]+([.,][0-9]+)?"
+                            title="Ingresa un número, por ejemplo 90 o 90,5"
+                        >
+
+                        <span class="ayuda-campo">
+                            Medida en centímetros.
+                        </span>
+
+                    </div>
+
+
+                    <!-- FECHA DE ENTREGA -->
 
                     <div class="campo-formulario">
 
@@ -157,6 +231,10 @@ Editar Pedido - Promani
                             value="{{ pedido['fecha_entrega'] or '' }}"
                             required
                         >
+
+                        <span class="ayuda-campo">
+                            Fecha comprometida para finalizar o entregar el pedido.
+                        </span>
 
                     </div>
 
@@ -219,6 +297,25 @@ Editar Pedido - Promani
                     </div>
 
 
+                    <!-- MEDIDAS QUE RECIBE FLASK -->
+
+                    <input
+                        type="hidden"
+                        id="medidas"
+                        name="medidas"
+                        value="{{ pedido['medidas'] or '' }}"
+                    >
+
+
+                    <!-- MEDIDAS ACTUALES -->
+
+                    <input
+                        type="hidden"
+                        id="medidas-originales"
+                        value="{{ pedido['medidas'] or '' }}"
+                    >
+
+
                 </div>
 
 
@@ -248,5 +345,128 @@ Editar Pedido - Promani
 
 
 </div>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+
+        const medidasOriginales = document
+            .getElementById("medidas-originales")
+            .value
+            .trim();
+
+        if (medidasOriginales === "") {
+            return;
+        }
+
+        const patron =
+            /^\s*([0-9]+(?:[.,][0-9]+)?)\s*x\s*([0-9]+(?:[.,][0-9]+)?)\s*x\s*([0-9]+(?:[.,][0-9]+)?)\s*(?:cm)?\s*$/i;
+
+        const resultado = medidasOriginales.match(patron);
+
+        if (resultado) {
+
+            document.getElementById("largo").value =
+                resultado[1];
+
+            document.getElementById("ancho").value =
+                resultado[2];
+
+            document.getElementById("alto").value =
+                resultado[3];
+
+        }
+
+    });
+
+
+    document
+        .getElementById("formulario-editar-pedido")
+        .addEventListener("submit", function(event) {
+
+            const largo = document
+                .getElementById("largo")
+                .value
+                .trim()
+                .replace(",", ".");
+
+            const ancho = document
+                .getElementById("ancho")
+                .value
+                .trim()
+                .replace(",", ".");
+
+            const alto = document
+                .getElementById("alto")
+                .value
+                .trim()
+                .replace(",", ".");
+
+
+            const algunaMedida =
+                largo !== "" ||
+                ancho !== "" ||
+                alto !== "";
+
+
+            const todasLasMedidas =
+                largo !== "" &&
+                ancho !== "" &&
+                alto !== "";
+
+
+            if (algunaMedida && !todasLasMedidas) {
+
+                event.preventDefault();
+
+                alert(
+                    "Si deseas registrar las medidas del pedido, debes completar Largo, Ancho y Alto."
+                );
+
+                return;
+
+            }
+
+
+            if (todasLasMedidas) {
+
+                const largoNumero = Number(largo);
+                const anchoNumero = Number(ancho);
+                const altoNumero = Number(alto);
+
+
+                if (
+                    !Number.isFinite(largoNumero) ||
+                    !Number.isFinite(anchoNumero) ||
+                    !Number.isFinite(altoNumero) ||
+                    largoNumero <= 0 ||
+                    anchoNumero <= 0 ||
+                    altoNumero <= 0
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Las medidas deben ser valores numéricos mayores que 0."
+                    );
+
+                    return;
+
+                }
+
+
+                document.getElementById("medidas").value =
+                    largo + " x " + ancho + " x " + alto + " cm";
+
+            } else {
+
+                document.getElementById("medidas").value = "";
+
+            }
+
+        });
+
+</script>
 
 {% endblock %}
