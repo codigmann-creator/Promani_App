@@ -3,73 +3,39 @@ from getpass import getpass
 from werkzeug.security import generate_password_hash
 
 
-usuario = input("Nombre de usuario: ").strip()
-contrasena = getpass("Contraseña: ").strip()
+# CREAR USUARIO DESDE LA TERMINAL
 
-print("")
-print("Roles disponibles:")
-print("1 - Administrador")
-print("2 - Operario")
+def crear_usuario():
+    usuario = input("Nombre de usuario: ").strip()
+    contrasena = getpass("Contraseña: ")
+    print("\nRoles disponibles: 1 - Administrador | 2 - Operario")
+    rol = {"1": "administrador", "2": "operario"}.get(
+        input("Seleccione el rol (1 o 2): ").strip()
+    )
 
-opcion_rol = input("Seleccione el rol (1 o 2): ").strip()
+    if not usuario:
+        print("El nombre de usuario no puede estar vacío.")
+        return
+    if not contrasena:
+        print("La contraseña no puede estar vacía.")
+        return
+    if rol is None:
+        print("Rol no válido.")
+        return
 
-
-if not usuario:
-    print("El nombre de usuario no puede estar vacío.")
-    exit()
-
-
-if not contrasena:
-    print("La contraseña no puede estar vacía.")
-    exit()
-
-
-if opcion_rol == "1":
-    rol = "administrador"
-
-elif opcion_rol == "2":
-    rol = "operario"
-
-else:
-    print("Rol no válido.")
-    exit()
-
-
-contrasena_hash = generate_password_hash(contrasena)
-
-
-conexion = sqlite3.connect("promani.db")
-cursor = conexion.cursor()
-
-
-try:
-
-    cursor.execute("""
-        INSERT INTO usuarios (
-            usuario,
-            contrasena_hash,
-            rol
+    conexion = sqlite3.connect("promani.db")
+    try:
+        conexion.execute(
+            "INSERT INTO usuarios (usuario, contrasena_hash, rol) VALUES (?, ?, ?)",
+            (usuario, generate_password_hash(contrasena), rol)
         )
-        VALUES (?, ?, ?)
-    """, (
-        usuario,
-        contrasena_hash,
-        rol
-    ))
-
-    conexion.commit()
-
-    print("")
-    print("Usuario creado correctamente.")
-    print("Usuario:", usuario)
-    print("Rol:", rol)
+        conexion.commit()
+        print(f"\nUsuario creado correctamente.\nUsuario: {usuario}\nRol: {rol}")
+    except sqlite3.IntegrityError:
+        print("No se pudo crear el usuario: el nombre ya existe o hay datos no válidos.")
+    finally:
+        conexion.close()
 
 
-except sqlite3.IntegrityError:
-
-    print("Ese nombre de usuario ya existe.")
-
-
-finally:
-
-    conexion.close()
+if __name__ == "__main__":
+    crear_usuario()

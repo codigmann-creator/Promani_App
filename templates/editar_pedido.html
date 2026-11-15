@@ -1,472 +1,158 @@
+
 {% extends "base.html" %}
-
-
-{% block title %}
-Editar Pedido - Promani
-{% endblock %}
-
+{% block title %}Editar Pedido - Promani{% endblock %}
 
 {% block content %}
-
 <div class="formulario-pagina">
 
-
+    <!-- ENCABEZADO -->
     <section class="formulario-encabezado">
-
-        <h2>
-            Editar pedido
-        </h2>
-
-        <p>
-            Consulta los datos del pedido y actualiza sus medidas,
-            fecha de entrega o estado de producción.
-        </p>
-
+        <h2>Editar pedido</h2>
+        <p>Consulta los datos del pedido y actualiza sus medidas, fecha de entrega o estado de producción.</p>
     </section>
 
-
     <section class="formulario-card">
-
-
         <div class="formulario-card-header">
-
-            <h3>
-                Pedido N.º {{ pedido["id"] }}
-            </h3>
-
-            <p>
-                Información registrada y seguimiento del pedido.
-            </p>
-
+            <h3>Pedido N.º {{ pedido["id"] }}</h3>
+            <p>Información registrada y seguimiento del pedido.</p>
         </div>
-
 
         <div class="formulario-card-body">
 
-
             <!-- RESUMEN DEL PEDIDO -->
-
             <div class="resumen-pedido">
-
+                <div class="resumen-item">
+                    <span class="resumen-etiqueta">Cliente</span>
+                    <span class="resumen-valor">{{ pedido["cliente"] }}</span>
+                </div>
 
                 <div class="resumen-item">
-
-                    <span class="resumen-etiqueta">
-                        Cliente
-                    </span>
-
-                    <span class="resumen-valor">
-                        {{ pedido["cliente"] }}
-                    </span>
-
+                    <span class="resumen-etiqueta">Medidas actuales</span>
+                    <span class="resumen-valor">{{ pedido["medidas"] or "Sin información" }}</span>
                 </div>
-
-
-                <div class="resumen-item">
-
-                    <span class="resumen-etiqueta">
-                        Medidas actuales
-                    </span>
-
-                    <span class="resumen-valor">
-
-                        {% if pedido["medidas"] %}
-
-                            {{ pedido["medidas"] }}
-
-                        {% else %}
-
-                            Sin información
-
-                        {% endif %}
-
-                    </span>
-
-                </div>
-
 
                 <div class="resumen-item resumen-item-completo">
-
-                    <span class="resumen-etiqueta">
-                        Descripción
-                    </span>
-
-                    <span class="resumen-valor">
-                        {{ pedido["descripcion"] }}
-                    </span>
-
+                    <span class="resumen-etiqueta">Descripción</span>
+                    <span class="resumen-valor">{{ pedido["descripcion"] }}</span>
                 </div>
-
 
                 <div class="resumen-item resumen-item-completo">
-
-                    <span class="resumen-etiqueta">
-                        Observaciones
-                    </span>
-
-                    <span class="resumen-valor">
-
-                        {% if pedido["observaciones"] %}
-
-                            {{ pedido["observaciones"] }}
-
-                        {% else %}
-
-                            Sin observaciones
-
-                        {% endif %}
-
-                    </span>
-
+                    <span class="resumen-etiqueta">Observaciones</span>
+                    <span class="resumen-valor">{{ pedido["observaciones"] or "Sin observaciones" }}</span>
                 </div>
-
-
             </div>
-
 
             <div class="aviso-formulario">
-                Puedes modificar las medidas, la fecha comprometida y el estado actual
-                del pedido. Las medidas se guardarán en el formato
-                Largo × Ancho × Alto en centímetros.
+                Puedes modificar las medidas, la fecha comprometida y el estado actual del pedido.
+                Las medidas se ingresan en formato Largo × Ancho × Alto, en centímetros.
             </div>
 
-
-            <!-- FORMULARIO -->
-
-            <form
-                method="POST"
-                action="/editar-pedido/{{ pedido['id'] }}"
-                class="formulario-promani"
-                id="formulario-editar-pedido"
-            >
-
+            <!-- FORMULARIO DE EDICIÓN -->
+            <form method="POST"
+                  action="{{ url_for('editar_pedido', pedido_id=pedido['id']) }}"
+                  class="formulario-promani"
+                  id="formulario-editar-pedido">
 
                 <div class="formulario-grid">
 
-
-                    <!-- LARGO -->
-
+                    <!-- MEDIDAS -->
+                    {% for id, etiqueta, ejemplo in [
+                        ("largo", "Largo", "180"),
+                        ("ancho", "Ancho / Profundidad", "70"),
+                        ("alto", "Alto", "90")
+                    ] %}
                     <div class="campo-formulario">
-
-                        <label for="largo">
-                            Largo
-                        </label>
-
-                        <input
-                            type="text"
-                            id="largo"
-                            inputmode="decimal"
-                            placeholder="Ejemplo: 180"
-                            pattern="[0-9]+([.,][0-9]+)?"
-                            title="Ingresa un número, por ejemplo 180 o 180,5"
-                        >
-
-                        <span class="ayuda-campo">
-                            Medida en centímetros.
-                        </span>
-
+                        <label for="{{ id }}">{{ etiqueta }}</label>
+                        <input type="text" id="{{ id }}" inputmode="decimal"
+                               placeholder="Ejemplo: {{ ejemplo }}"
+                               pattern="[0-9]+([.,][0-9]+)?"
+                               title="Ingresa un número positivo, por ejemplo {{ ejemplo }} o {{ ejemplo }},5">
+                        <span class="ayuda-campo">Medida en centímetros.</span>
                     </div>
-
-
-                    <!-- ANCHO -->
-
-                    <div class="campo-formulario">
-
-                        <label for="ancho">
-                            Ancho / Profundidad
-                        </label>
-
-                        <input
-                            type="text"
-                            id="ancho"
-                            inputmode="decimal"
-                            placeholder="Ejemplo: 70"
-                            pattern="[0-9]+([.,][0-9]+)?"
-                            title="Ingresa un número, por ejemplo 70 o 70,5"
-                        >
-
-                        <span class="ayuda-campo">
-                            Medida en centímetros.
-                        </span>
-
-                    </div>
-
-
-                    <!-- ALTO -->
-
-                    <div class="campo-formulario">
-
-                        <label for="alto">
-                            Alto
-                        </label>
-
-                        <input
-                            type="text"
-                            id="alto"
-                            inputmode="decimal"
-                            placeholder="Ejemplo: 90"
-                            pattern="[0-9]+([.,][0-9]+)?"
-                            title="Ingresa un número, por ejemplo 90 o 90,5"
-                        >
-
-                        <span class="ayuda-campo">
-                            Medida en centímetros.
-                        </span>
-
-                    </div>
-
+                    {% endfor %}
 
                     <!-- FECHA DE ENTREGA -->
-
                     <div class="campo-formulario">
-
-                        <label for="fecha_entrega">
-                            Fecha de entrega
-                        </label>
-
-                        <input
-                            type="date"
-                            id="fecha_entrega"
-                            name="fecha_entrega"
-                            value="{{ pedido['fecha_entrega'] or '' }}"
-                            required
-                        >
-
+                        <label for="fecha_entrega">Fecha de entrega</label>
+                        <input type="date" id="fecha_entrega" name="fecha_entrega"
+                               value="{{ pedido['fecha_entrega'] or '' }}" required>
                         <span class="ayuda-campo">
                             Fecha comprometida para finalizar o entregar el pedido.
                         </span>
-
                     </div>
 
-
-                    <!-- ESTADO -->
-
+                    <!-- ESTADO DEL PEDIDO -->
                     <div class="campo-formulario">
-
-                        <label for="estado">
-                            Estado del pedido
-                        </label>
-
-                        <select
-                            id="estado"
-                            name="estado"
-                            required
-                        >
-
-                            <option
-                                value="Pendiente"
-                                {% if pedido["estado"] == "Pendiente" %}
-                                    selected
-                                {% endif %}
-                            >
-                                Pendiente
+                        <label for="estado">Estado del pedido</label>
+                        <select id="estado" name="estado" required>
+                            {% for estado in ["Pendiente", "En producción", "Terminado", "Entregado"] %}
+                            <option value="{{ estado }}"
+                                    {% if pedido["estado"] == estado %}selected{% endif %}>
+                                {{ estado }}
                             </option>
-
-
-                            <option
-                                value="En producción"
-                                {% if pedido["estado"] == "En producción" %}
-                                    selected
-                                {% endif %}
-                            >
-                                En producción
-                            </option>
-
-
-                            <option
-                                value="Terminado"
-                                {% if pedido["estado"] == "Terminado" %}
-                                    selected
-                                {% endif %}
-                            >
-                                Terminado
-                            </option>
-
-
-                            <option
-                                value="Entregado"
-                                {% if pedido["estado"] == "Entregado" %}
-                                    selected
-                                {% endif %}
-                            >
-                                Entregado
-                            </option>
-
+                            {% endfor %}
                         </select>
-
                     </div>
 
-
-                    <!-- MEDIDAS QUE RECIBE FLASK -->
-
-                    <input
-                        type="hidden"
-                        id="medidas"
-                        name="medidas"
-                        value="{{ pedido['medidas'] or '' }}"
-                    >
-
-
-                    <!-- MEDIDAS ACTUALES -->
-
-                    <input
-                        type="hidden"
-                        id="medidas-originales"
-                        value="{{ pedido['medidas'] or '' }}"
-                    >
-
+                    <!-- DATOS DE MEDIDAS -->
+                    <input type="hidden" id="medidas" name="medidas"
+                           value="{{ pedido['medidas'] or '' }}">
+                    <input type="hidden" id="medidas-originales"
+                           value="{{ pedido['medidas'] or '' }}">
 
                 </div>
-
 
                 <div class="formulario-acciones">
-
-                    <a
-                        href="/pedidos"
-                        class="boton-volver"
-                    >
-                        Volver
-                    </a>
-
-
-                    <button type="submit">
-                        Guardar cambios
-                    </button>
-
+                    <a href="{{ url_for('pedidos') }}" class="boton-volver">Volver</a>
+                    <button type="submit">Guardar cambios</button>
                 </div>
-
-
             </form>
-
-
         </div>
-
     </section>
-
-
 </div>
 
-
+<!-- VALIDACIÓN Y FORMATO DE MEDIDAS -->
 <script>
+    const obtenerCampo = id => document.getElementById(id);
+    const camposMedidas = ["largo", "ancho", "alto"];
 
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", () => {
+        const originales = obtenerCampo("medidas-originales").value.trim();
+        const patron = /^\s*([0-9]+(?:[.,][0-9]+)?)\s*x\s*([0-9]+(?:[.,][0-9]+)?)\s*x\s*([0-9]+(?:[.,][0-9]+)?)\s*(?:cm)?\s*$/i;
+        const resultado = originales.match(patron);
 
-        const medidasOriginales = document
-            .getElementById("medidas-originales")
-            .value
-            .trim();
+        if (resultado) {
+            camposMedidas.forEach((id, i) => {
+                obtenerCampo(id).value = resultado[i + 1];
+            });
+        }
+    });
 
-        if (medidasOriginales === "") {
+    obtenerCampo("formulario-editar-pedido").addEventListener("submit", event => {
+        const valores = camposMedidas.map(id =>
+            obtenerCampo(id).value.trim().replace(",", ".")
+        );
+
+        const alguna = valores.some(valor => valor !== "");
+        const todas = valores.every(valor => valor !== "");
+
+        if (alguna && !todas) {
+            event.preventDefault();
+            alert("Debes completar Largo, Ancho y Alto.");
             return;
         }
 
-        const patron =
-            /^\s*([0-9]+(?:[.,][0-9]+)?)\s*x\s*([0-9]+(?:[.,][0-9]+)?)\s*x\s*([0-9]+(?:[.,][0-9]+)?)\s*(?:cm)?\s*$/i;
-
-        const resultado = medidasOriginales.match(patron);
-
-        if (resultado) {
-
-            document.getElementById("largo").value =
-                resultado[1];
-
-            document.getElementById("ancho").value =
-                resultado[2];
-
-            document.getElementById("alto").value =
-                resultado[3];
-
+        if (todas && valores.some(valor =>
+            !Number.isFinite(Number(valor)) || Number(valor) <= 0
+        )) {
+            event.preventDefault();
+            alert("Las medidas deben ser números mayores que 0.");
+            return;
         }
 
+        obtenerCampo("medidas").value = todas
+            ? valores.join(" x ") + " cm"
+            : "";
     });
-
-
-    document
-        .getElementById("formulario-editar-pedido")
-        .addEventListener("submit", function(event) {
-
-            const largo = document
-                .getElementById("largo")
-                .value
-                .trim()
-                .replace(",", ".");
-
-            const ancho = document
-                .getElementById("ancho")
-                .value
-                .trim()
-                .replace(",", ".");
-
-            const alto = document
-                .getElementById("alto")
-                .value
-                .trim()
-                .replace(",", ".");
-
-
-            const algunaMedida =
-                largo !== "" ||
-                ancho !== "" ||
-                alto !== "";
-
-
-            const todasLasMedidas =
-                largo !== "" &&
-                ancho !== "" &&
-                alto !== "";
-
-
-            if (algunaMedida && !todasLasMedidas) {
-
-                event.preventDefault();
-
-                alert(
-                    "Si deseas registrar las medidas del pedido, debes completar Largo, Ancho y Alto."
-                );
-
-                return;
-
-            }
-
-
-            if (todasLasMedidas) {
-
-                const largoNumero = Number(largo);
-                const anchoNumero = Number(ancho);
-                const altoNumero = Number(alto);
-
-
-                if (
-                    !Number.isFinite(largoNumero) ||
-                    !Number.isFinite(anchoNumero) ||
-                    !Number.isFinite(altoNumero) ||
-                    largoNumero <= 0 ||
-                    anchoNumero <= 0 ||
-                    altoNumero <= 0
-                ) {
-
-                    event.preventDefault();
-
-                    alert(
-                        "Las medidas deben ser valores numéricos mayores que 0."
-                    );
-
-                    return;
-
-                }
-
-
-                document.getElementById("medidas").value =
-                    largo + " x " + ancho + " x " + alto + " cm";
-
-            } else {
-
-                document.getElementById("medidas").value = "";
-
-            }
-
-        });
-
 </script>
-
 {% endblock %}

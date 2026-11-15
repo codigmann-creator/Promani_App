@@ -1,301 +1,106 @@
+
 {% extends "base.html" %}
-
-
-{% block title %}
-Registrar Material - Promani
-{% endblock %}
-
+{% block title %}Registrar Material - Promani{% endblock %}
 
 {% block content %}
-
 <div class="formulario-pagina">
 
-
     <!-- ENCABEZADO -->
-
     <section class="formulario-encabezado">
-
-        <h2>
-            Registrar nuevo material
-        </h2>
-
-        <p>
-            Agrega un nuevo material al inventario indicando
-            su unidad de medida, stock inicial y nivel mínimo de reposición.
-        </p>
-
+        <h2>Registrar nuevo material</h2>
+        <p>Agrega un nuevo material al inventario indicando su unidad de medida, stock inicial y nivel mínimo de reposición.</p>
     </section>
 
-
-    <!-- TARJETA PRINCIPAL -->
-
     <section class="formulario-card">
-
-
         <div class="formulario-card-header">
-
-            <h3>
-                Información del material
-            </h3>
-
-            <p>
-                Completa los datos necesarios para incorporar
-                el material al inventario de Promani.
-            </p>
-
+            <h3>Información del material</h3>
+            <p>Completa los datos necesarios para incorporar el material al inventario de Promani.</p>
         </div>
-
 
         <div class="formulario-card-body">
 
-
-            <form
-                method="POST"
-                action="/nuevo-material"
-                class="formulario-promani"
-                id="formulario-material"
-            >
-
+            <!-- FORMULARIO DE REGISTRO -->
+            <form method="POST" action="{{ url_for('nuevo_material') }}"
+                  class="formulario-promani" id="formulario-material">
 
                 <div class="formulario-grid">
 
-
                     <!-- NOMBRE -->
-
                     <div class="campo-formulario campo-completo">
-
-                        <label for="nombre">
-                            Nombre del material
-                        </label>
-
-                        <input
-                            type="text"
-                            id="nombre"
-                            name="nombre"
-                            placeholder="Ejemplo: Plancha acero inoxidable 304"
-                            required
-                        >
-
+                        <label for="nombre">Nombre del material</label>
+                        <input type="text" id="nombre" name="nombre"
+                               placeholder="Ejemplo: Plancha acero inoxidable 304" required>
                         <span class="ayuda-campo">
                             Utiliza un nombre que permita identificar fácilmente el material.
                         </span>
-
                     </div>
 
-
-                    <!-- UNIDAD -->
-
+                    <!-- UNIDAD DE MEDIDA -->
                     <div class="campo-formulario">
-
-                        <label for="unidad">
-                            Unidad de medida
-                        </label>
-
-                        <select
-                            id="unidad"
-                            name="unidad"
-                            required
-                        >
-
-                            <option value="">
-                                Seleccione una unidad
-                            </option>
-
-                            <option value="Unidad">
-                                Unidad
-                            </option>
-
-                            <option value="Plancha">
-                                Plancha
-                            </option>
-
-                            <option value="Metro">
-                                Metro
-                            </option>
-
-                            <option value="Kilogramo">
-                                Kilogramo
-                            </option>
-
-                            <option value="Caja">
-                                Caja
-                            </option>
-
-                            <option value="Paquete">
-                                Paquete
-                            </option>
-
+                        <label for="unidad">Unidad de medida</label>
+                        <select id="unidad" name="unidad" required>
+                            <option value="">Seleccione una unidad</option>
+                            {% for unidad in ["Unidad", "Plancha", "Metro", "Kilogramo", "Caja", "Paquete"] %}
+                                <option value="{{ unidad }}">{{ unidad }}</option>
+                            {% endfor %}
                         </select>
-
-                        <span class="ayuda-campo">
-                            Unidad utilizada para controlar el stock.
-                        </span>
-
+                        <span class="ayuda-campo">Unidad utilizada para controlar el stock.</span>
                     </div>
-
 
                     <!-- STOCK INICIAL -->
-
                     <div class="campo-formulario">
-
-                        <label for="stock">
-                            Stock inicial
-                        </label>
-
-                        <input
-                            type="text"
-                            id="stock"
-                            name="stock"
-                            inputmode="decimal"
-                            placeholder="Ejemplo: 20"
-                            required
-                        >
-
-                        <span class="ayuda-campo">
-                            Cantidad actualmente disponible.
-                        </span>
-
+                        <label for="stock">Stock inicial</label>
+                        <input type="text" id="stock" name="stock"
+                               inputmode="decimal" placeholder="Ejemplo: 20" required>
+                        <span class="ayuda-campo">Cantidad actualmente disponible.</span>
                     </div>
-
 
                     <!-- STOCK MÍNIMO -->
-
                     <div class="campo-formulario">
-
-                        <label for="stock_minimo">
-                            Stock mínimo
-                        </label>
-
-                        <input
-                            type="text"
-                            id="stock_minimo"
-                            name="stock_minimo"
-                            inputmode="decimal"
-                            placeholder="Ejemplo: 5"
-                            required
-                        >
-
+                        <label for="stock_minimo">Stock mínimo</label>
+                        <input type="text" id="stock_minimo" name="stock_minimo"
+                               inputmode="decimal" placeholder="Ejemplo: 5" required>
                         <span class="ayuda-campo">
-                            Cuando el stock llegue a este nivel,
-                            el sistema lo mostrará como stock bajo.
+                            Cuando el stock llegue a este nivel, el sistema lo mostrará como stock bajo.
                         </span>
-
                     </div>
-
-
                 </div>
 
-
-                <!-- AVISO -->
-
+                <!-- INFORMACIÓN -->
                 <div class="aviso-formulario">
-
-                    <strong>
-                        Control de inventario:
-                    </strong>
-
+                    <strong>Control de inventario:</strong>
                     el stock inicial representa la cantidad disponible actualmente,
-                    mientras que el stock mínimo permite identificar cuándo es
-                    necesario considerar una reposición.
-
+                    mientras que el stock mínimo permite identificar cuándo es necesario considerar una reposición.
                 </div>
-
-
-                <!-- BOTONES -->
 
                 <div class="formulario-acciones">
-
-                    <a
-                        href="/inventario"
-                        class="boton-volver"
-                    >
-                        Volver
-                    </a>
-
-                    <button type="submit">
-                        Registrar material
-                    </button>
-
+                    <a href="{{ url_for('inventario') }}" class="boton-volver">Volver</a>
+                    <button type="submit">Registrar material</button>
                 </div>
-
-
             </form>
-
-
         </div>
-
     </section>
-
-
 </div>
 
-
+<!-- VALIDACIÓN DE STOCK -->
 <script>
+    document.getElementById("formulario-material").addEventListener("submit", event => {
+        const campos = [
+            ["stock", "El stock inicial"],
+            ["stock_minimo", "El stock mínimo"]
+        ];
 
-    document
-        .getElementById("formulario-material")
-        .addEventListener(
-            "submit",
-            function(event) {
+        for (const [id, nombre] of campos) {
+            const texto = document.getElementById(id).value.trim().replace(",", ".");
+            const valor = Number(texto);
 
-                const stockTexto =
-                    document
-                        .getElementById("stock")
-                        .value
-                        .trim()
-                        .replace(",", ".");
-
-
-                const stockMinimoTexto =
-                    document
-                        .getElementById("stock_minimo")
-                        .value
-                        .trim()
-                        .replace(",", ".");
-
-
-                const stock =
-                    Number(stockTexto);
-
-
-                const stockMinimo =
-                    Number(stockMinimoTexto);
-
-
-                if (
-                    !Number.isFinite(stock) ||
-                    stock < 0
-                ) {
-
-                    event.preventDefault();
-
-                    alert(
-                        "El stock inicial debe ser un número igual o mayor que 0."
-                    );
-
-                    return;
-
-                }
-
-
-                if (
-                    !Number.isFinite(stockMinimo) ||
-                    stockMinimo < 0
-                ) {
-
-                    event.preventDefault();
-
-                    alert(
-                        "El stock mínimo debe ser un número igual o mayor que 0."
-                    );
-
-                    return;
-
-                }
-
+            if (!texto || !Number.isFinite(valor) || valor < 0) {
+                event.preventDefault();
+                alert(`${nombre} debe ser un número igual o mayor que 0.`);
+                document.getElementById(id).focus();
+                return;
             }
-        );
-
+        }
+    });
 </script>
-
 {% endblock %}

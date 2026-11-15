@@ -1,15 +1,10 @@
 
 {% extends "base.html" %}
-
-{% block title %}
-Registrar Consumo - Promani
-{% endblock %}
+{% block title %}Registrar Consumo - Promani{% endblock %}
 
 {% block content %}
-
 <style>
-    /* Advertencia de validación */
-
+    /* ADVERTENCIAS DE VALIDACIÓN */
     .consumo-advertencia {
         display: none;
         margin-top: 10px;
@@ -50,524 +45,204 @@ Registrar Consumo - Promani
     }
 </style>
 
-
 <div class="formulario-pagina">
 
     <!-- ENCABEZADO -->
-
     <section class="formulario-encabezado">
-
         <h2>Registrar consumo de material</h2>
-
         <p>
             Registra los materiales utilizados en un pedido.
-            La cantidad indicada será descontada automáticamente
-            del stock disponible.
+            La cantidad indicada será descontada automáticamente del stock disponible.
         </p>
-
     </section>
 
-
-    <!-- TARJETA PRINCIPAL -->
-
     <section class="formulario-card">
-
         <div class="formulario-card-header">
-
             <h3>Información del consumo</h3>
-
-            <p>
-                Selecciona el pedido, el material utilizado
-                y la cantidad consumida.
-            </p>
-
+            <p>Selecciona el pedido, el material utilizado y la cantidad consumida.</p>
         </div>
-
 
         <div class="formulario-card-body">
 
-            <form
-                method="POST"
-                action="/nuevo-consumo"
-                class="formulario-promani"
-                id="formulario-consumo"
-            >
+            <!-- FORMULARIO DE CONSUMO -->
+            <form method="POST" action="{{ url_for('nuevo_consumo') }}"
+                  class="formulario-promani" id="formulario-consumo">
 
                 <div class="formulario-grid">
 
                     <!-- PEDIDO -->
-
                     <div class="campo-formulario campo-completo">
-
-                        <label for="pedido_id">
-                            Pedido asociado
-                        </label>
-
-                        <select
-                            id="pedido_id"
-                            name="pedido_id"
-                            required
-                        >
-
-                            <option value="">
-                                Seleccione un pedido
-                            </option>
-
+                        <label for="pedido_id">Pedido asociado</label>
+                        <select id="pedido_id" name="pedido_id" required>
+                            <option value="">Seleccione un pedido</option>
                             {% for pedido in pedidos %}
-
                                 <option value="{{ pedido['id'] }}">
-                                    Pedido #{{ pedido["id"] }}
-                                    - {{ pedido["cliente"] }}
-                                    - {{ pedido["descripcion"] }}
+                                    Pedido #{{ pedido["id"] }} - {{ pedido["cliente"] }} - {{ pedido["descripcion"] }}
                                 </option>
-
                             {% endfor %}
-
                         </select>
-
                         <span class="ayuda-campo">
                             Selecciona el pedido en el que se utilizó el material.
                         </span>
-
                     </div>
 
-
                     <!-- MATERIAL -->
-
                     <div class="campo-formulario">
-
-                        <label for="material_id">
-                            Material
-                        </label>
-
-                        <select
-                            id="material_id"
-                            name="material_id"
-                            required
-                        >
-
-                            <option
-                                value=""
-                                data-stock=""
-                                data-unidad=""
-                            >
-                                Seleccione un material
-                            </option>
-
+                        <label for="material_id">Material</label>
+                        <select id="material_id" name="material_id" required>
+                            <option value="" data-stock="" data-unidad="">Seleccione un material</option>
                             {% for material in materiales %}
-
-                                <option
-                                    value="{{ material['id'] }}"
-                                    data-stock="{{ material['stock'] }}"
-                                    data-unidad="{{ material['unidad'] }}"
-                                >
-
-                                    {{ material["nombre"] }}
-
-                                    -
-
-                                    {% if material["stock"] % 1 == 0 %}
-                                        {{ material["stock"] | int }}
-                                    {% else %}
-                                        {{ material["stock"] }}
-                                    {% endif %}
-
+                                <option value="{{ material['id'] }}"
+                                        data-stock="{{ material['stock'] }}"
+                                        data-unidad="{{ material['unidad'] }}">
+                                    {{ material["nombre"] }} -
+                                    {{ material["stock"] | int if material["stock"] % 1 == 0 else material["stock"] }}
                                     {{ material["unidad"] }} disponibles
-
                                 </option>
-
                             {% endfor %}
-
                         </select>
-
                         <span class="ayuda-campo">
                             Solo se puede consumir stock actualmente disponible.
                         </span>
-
                     </div>
 
-
                     <!-- CANTIDAD -->
-
                     <div class="campo-formulario">
+                        <label for="cantidad">Cantidad utilizada</label>
+                        <input type="text" id="cantidad" name="cantidad"
+                               inputmode="decimal" placeholder="Ejemplo: 2,5"
+                               required aria-describedby="unidad-cantidad advertencia-consumo">
 
-                        <label for="cantidad">
-                            Cantidad utilizada
-                        </label>
-
-                        <input
-                            type="text"
-                            id="cantidad"
-                            name="cantidad"
-                            inputmode="decimal"
-                            placeholder="Ejemplo: 2,5"
-                            required
-                            aria-describedby="unidad-cantidad advertencia-consumo"
-                        >
-
-                        <span
-                            class="ayuda-campo"
-                            id="unidad-cantidad"
-                        >
+                        <span class="ayuda-campo" id="unidad-cantidad">
                             Selecciona un material para conocer su unidad.
                         </span>
 
-
-                        <!-- ADVERTENCIA DENTRO DEL FORMULARIO -->
-
-                        <div
-                            class="consumo-advertencia"
-                            id="advertencia-consumo"
-                            role="alert"
-                            aria-live="polite"
-                        >
-
-                            <span class="consumo-advertencia-icono">
-                                ⚠
-                            </span>
-
+                        <div class="consumo-advertencia" id="advertencia-consumo"
+                             role="alert" aria-live="polite">
+                            <span class="consumo-advertencia-icono">⚠</span>
                             <div>
-
-                                <strong id="advertencia-titulo">
-                                    Stock insuficiente
-                                </strong>
-
+                                <strong id="advertencia-titulo">Stock insuficiente</strong>
                                 <span id="advertencia-texto"></span>
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
 
-
-                <!-- INFORMACIÓN DE STOCK -->
-
-                <div
-                    class="aviso-formulario"
-                    id="informacion-stock"
-                    style="display: none;"
-                >
-
-                    <strong>
-                        Stock disponible:
-                    </strong>
-
-                    <span id="stock-disponible">
-                        -
-                    </span>
-
+                <!-- INFORMACIÓN DEL STOCK -->
+                <div class="aviso-formulario" id="informacion-stock" style="display: none;">
+                    <strong>Stock disponible:</strong>
+                    <span id="stock-disponible">-</span>
                 </div>
-
-
-                <!-- ACCIONES -->
 
                 <div class="formulario-acciones">
-
-                    <a
-                        href="/inventario"
-                        class="boton-volver"
-                    >
-                        Volver
-                    </a>
-
-                    <button type="submit">
-                        Registrar consumo
-                    </button>
-
+                    <a href="{{ url_for('inventario') }}" class="boton-volver">Volver</a>
+                    <button type="submit">Registrar consumo</button>
                 </div>
-
             </form>
-
         </div>
-
     </section>
-
 </div>
 
-
+<!-- VALIDACIÓN DE CANTIDAD Y STOCK -->
 <script>
+    const formulario = document.getElementById("formulario-consumo");
+    const material = document.getElementById("material_id");
+    const cantidad = document.getElementById("cantidad");
+    const informacion = document.getElementById("informacion-stock");
+    const stockDisponible = document.getElementById("stock-disponible");
+    const unidadCantidad = document.getElementById("unidad-cantidad");
+    const advertencia = document.getElementById("advertencia-consumo");
+    const tituloError = document.getElementById("advertencia-titulo");
+    const textoError = document.getElementById("advertencia-texto");
 
-    const formularioConsumo =
-        document.getElementById("formulario-consumo");
+    const formato = numero => numero.toLocaleString("es-CL", { maximumFractionDigits: 10 });
+    const opcionActual = () => material.selectedOptions[0];
 
-    const selectorMaterial =
-        document.getElementById("material_id");
-
-    const campoCantidad =
-        document.getElementById("cantidad");
-
-    const informacionStock =
-        document.getElementById("informacion-stock");
-
-    const stockDisponible =
-        document.getElementById("stock-disponible");
-
-    const unidadCantidad =
-        document.getElementById("unidad-cantidad");
-
-    const advertenciaConsumo =
-        document.getElementById("advertencia-consumo");
-
-    const advertenciaTitulo =
-        document.getElementById("advertencia-titulo");
-
-    const advertenciaTexto =
-        document.getElementById("advertencia-texto");
-
-
-    // FORMATEAR CANTIDADES
-
-    function formatearCantidad(numero) {
-
-        return numero.toLocaleString("es-CL", {
-            maximumFractionDigits: 10
-        });
-
+    // MOSTRAR U OCULTAR ADVERTENCIAS
+    function mostrarError(titulo, mensaje) {
+        tituloError.textContent = titulo;
+        textoError.textContent = mensaje;
+        advertencia.classList.add("visible");
+        cantidad.classList.add("consumo-campo-error");
+        cantidad.setAttribute("aria-invalid", "true");
     }
 
-
-    // MOSTRAR ADVERTENCIA
-
-    function mostrarAdvertencia(titulo, mensaje) {
-
-        advertenciaTitulo.textContent = titulo;
-
-        advertenciaTexto.textContent = mensaje;
-
-        advertenciaConsumo.classList.add("visible");
-
-        campoCantidad.classList.add("consumo-campo-error");
-
-        campoCantidad.setAttribute("aria-invalid", "true");
-
+    function ocultarError() {
+        advertencia.classList.remove("visible");
+        tituloError.textContent = "";
+        textoError.textContent = "";
+        cantidad.classList.remove("consumo-campo-error");
+        cantidad.removeAttribute("aria-invalid");
     }
 
+    // VALIDAR CANTIDAD Y STOCK
+    function validarCantidad() {
+        const texto = cantidad.value.trim().replace(",", ".");
+        const opcion = opcionActual();
 
-    // OCULTAR ADVERTENCIA
-
-    function ocultarAdvertencia() {
-
-        advertenciaConsumo.classList.remove("visible");
-
-        advertenciaTitulo.textContent = "";
-
-        advertenciaTexto.textContent = "";
-
-        campoCantidad.classList.remove("consumo-campo-error");
-
-        campoCantidad.removeAttribute("aria-invalid");
-
-    }
-
-
-    // OBTENER MATERIAL SELECCIONADO
-
-    function obtenerMaterial() {
-
-        return selectorMaterial.options[
-            selectorMaterial.selectedIndex
-        ];
-
-    }
-
-
-    // VALIDAR CANTIDAD
-
-    function validarCantidad(mostrarError = true) {
-
-        const textoOriginal = campoCantidad.value.trim();
-
-        if (textoOriginal === "") {
-
-            ocultarAdvertencia();
-
+        if (!texto || !opcion.value) {
+            ocultarError();
             return false;
-
         }
 
-        const textoNormalizado =
-            textoOriginal.replace(",", ".");
-
-        const formatoValido =
-            /^(?:\d+(?:\.\d*)?|\.\d+)$/.test(
-                textoNormalizado
-            );
-
-        const cantidad = Number(textoNormalizado);
-
-        if (
-            !formatoValido ||
-            !Number.isFinite(cantidad) ||
-            cantidad <= 0
-        ) {
-
-            if (mostrarError) {
-
-                mostrarAdvertencia(
-                    "Cantidad no válida",
-                    "Ingresa un número mayor que cero."
-                );
-
-            } else {
-
-                ocultarAdvertencia();
-
-            }
-
+        const numero = Number(texto);
+        if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(texto) ||
+            !Number.isFinite(numero) || numero <= 0) {
+            mostrarError("Cantidad no válida", "Ingresa un número mayor que cero.");
             return false;
-
-        }
-
-        const opcion = obtenerMaterial();
-
-        if (!opcion.value) {
-
-            ocultarAdvertencia();
-
-            return false;
-
         }
 
         const stock = Number(opcion.dataset.stock);
-
         const unidad = opcion.dataset.unidad || "unidades";
 
-        if (
-            Number.isFinite(stock) &&
-            cantidad > stock
-        ) {
-
-            if (mostrarError) {
-
-                mostrarAdvertencia(
-                    "Stock insuficiente",
-                    "La cantidad ingresada (" +
-                    formatearCantidad(cantidad) + " " + unidad +
-                    ") supera el stock disponible (" +
-                    formatearCantidad(stock) + " " + unidad +
-                    "). Ingresa una cantidad menor o igual al stock disponible."
-                );
-
-            }
-
+        if (numero > stock) {
+            mostrarError(
+                "Stock insuficiente",
+                `La cantidad ingresada (${formato(numero)} ${unidad}) supera el stock disponible (${formato(stock)} ${unidad}). Ingresa una cantidad menor o igual al stock disponible.`
+            );
             return false;
-
         }
 
-        ocultarAdvertencia();
-
+        ocultarError();
         return true;
-
     }
 
-
-    // ACTUALIZAR INFORMACIÓN DEL MATERIAL
-
+    // ACTUALIZAR STOCK DISPONIBLE
     function actualizarMaterial() {
+        const opcion = opcionActual();
 
-        const opcion = obtenerMaterial();
-
-        const stockTexto = opcion.dataset.stock;
-
-        const unidad = opcion.dataset.unidad;
-
-        if (opcion.value && stockTexto !== "") {
-
-            const stock = Number(stockTexto);
-
+        if (opcion.value && opcion.dataset.stock !== "") {
             stockDisponible.textContent =
-                formatearCantidad(stock) + " " + unidad;
-
-            informacionStock.style.display = "block";
-
+                `${formato(Number(opcion.dataset.stock))} ${opcion.dataset.unidad}`;
+            informacion.style.display = "block";
             unidadCantidad.textContent =
-                "Ingrese la cantidad utilizada en " +
-                unidad + ".";
-
+                `Ingrese la cantidad utilizada en ${opcion.dataset.unidad}.`;
         } else {
-
-            informacionStock.style.display = "none";
-
+            informacion.style.display = "none";
             stockDisponible.textContent = "-";
-
             unidadCantidad.textContent =
                 "Selecciona un material para conocer su unidad.";
-
         }
 
-        validarCantidad();
-
+        if (cantidad.value.trim()) validarCantidad();
+        else ocultarError();
     }
 
+    // EVENTOS DEL FORMULARIO
+    material.addEventListener("change", actualizarMaterial);
 
-    // VALIDAR AL CAMBIAR MATERIAL
+    cantidad.addEventListener("input", () => {
+        if (cantidad.value.trim()) validarCantidad();
+        else ocultarError();
+    });
 
-    selectorMaterial.addEventListener(
-        "change",
-        actualizarMaterial
-    );
-
-
-    // VALIDAR MIENTRAS SE ESCRIBE
-
-    campoCantidad.addEventListener(
-        "input",
-        function() {
-
-            if (campoCantidad.value.trim() === "") {
-
-                ocultarAdvertencia();
-
-                return;
-
-            }
-
-            validarCantidad(false);
-
-            const opcion = obtenerMaterial();
-
-            if (
-                opcion.value &&
-                campoCantidad.value.trim() !== ""
-            ) {
-
-                validarCantidad(true);
-
-            }
-
+    formulario.addEventListener("submit", event => {
+        if (!validarCantidad()) {
+            event.preventDefault();
+            cantidad.focus();
         }
-    );
-
-
-    // VALIDAR ANTES DE REGISTRAR
-
-    formularioConsumo.addEventListener(
-        "submit",
-        function(event) {
-
-            if (!validarCantidad(true)) {
-
-                event.preventDefault();
-
-                if (campoCantidad.value.trim() !== "") {
-
-                    campoCantidad.focus();
-
-                }
-
-            }
-
-        }
-    );
-
-
-    // ESTADO INICIAL
+    });
 
     actualizarMaterial();
-
 </script>
-
 {% endblock %}

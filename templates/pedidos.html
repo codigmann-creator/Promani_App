@@ -1,117 +1,52 @@
+
 {% extends "base.html" %}
-
-{% block title %}
-Pedidos - Promani
-{% endblock %}
-
+{% block title %}Pedidos - Promani{% endblock %}
 
 {% block content %}
-
 <div class="pedidos-contenedor">
 
-
     <!-- ENCABEZADO -->
-
     <section class="pedidos-encabezado">
-
-        <h2>
-            Gestión de Pedidos
-        </h2>
-
+        <h2>Gestión de Pedidos</h2>
         <p>
             Desde esta sección puedes registrar nuevos pedidos,
             revisar sus fechas de entrega y actualizar el avance de producción.
         </p>
-
     </section>
-
-
-    <!-- DISTRIBUCIÓN PRINCIPAL -->
 
     <section class="pedidos-layout">
 
-
-        <!-- =====================================
-             COLUMNA IZQUIERDA
-             ACCIONES
-             ===================================== -->
-
+        <!-- ACCIONES -->
         <aside class="pedidos-panel pedidos-lateral">
-
-            <h3 class="titulo-panel-pedidos">
-                Acciones
-            </h3>
-
+            <h3 class="titulo-panel-pedidos">Acciones</h3>
 
             <div class="pedidos-tarjetas">
-
-
-                <a
-                    href="/nuevo-pedido"
-                    class="acceso-card pedido-card"
-                >
-
+                <a href="{{ url_for('nuevo_pedido') }}" class="acceso-card pedido-card">
                     <div class="acceso-contenido">
-
-                        <h3>
-                            Registrar pedido
-                        </h3>
-
-                        <p>
-                            Ingresar un nuevo pedido con cliente,
-                            descripción, medidas y fecha de entrega.
-                        </p>
-
+                        <h3>Registrar pedido</h3>
+                        <p>Ingresar un nuevo pedido con cliente, descripción, medidas y fecha de entrega.</p>
                     </div>
-
-                    <span class="acceso-ir">
-                        Registrar pedido →
-                    </span>
-
+                    <span class="acceso-ir">Registrar pedido →</span>
                 </a>
-
-
             </div>
-
 
             <div class="info-pedido">
-
-                <h4>
-                    Seguimiento automático
-                </h4>
-
+                <h4>Seguimiento automático</h4>
                 <p>
-                    Si un pedido supera su fecha de entrega
-                    y aún no está terminado o entregado,
-                    el sistema lo identifica automáticamente
-                    como atrasado.
+                    Si un pedido supera su fecha de entrega y aún no está
+                    terminado o entregado, el sistema lo identifica automáticamente como atrasado.
                 </p>
-
             </div>
-
         </aside>
 
-
-        <!-- =====================================
-             COLUMNA CENTRAL
-             PEDIDOS REGISTRADOS
-             ===================================== -->
-
+        <!-- PEDIDOS REGISTRADOS -->
         <section class="pedidos-panel pedidos-central">
-
-            <h3 class="titulo-panel-pedidos">
-                Pedidos registrados
-            </h3>
-
+            <h3 class="titulo-panel-pedidos">Pedidos registrados</h3>
 
             {% if pedidos %}
-
                 <div class="tabla-pedidos">
-
                     <table>
-
                         <thead>
-
                             <tr>
                                 <th>ID</th>
                                 <th>Cliente</th>
@@ -122,247 +57,88 @@ Pedidos - Promani
                                 <th>Observaciones</th>
                                 <th>Acción</th>
                             </tr>
-
                         </thead>
 
-
                         <tbody>
-
                             {% for pedido in pedidos %}
+                            <tr>
+                                <td>{{ pedido["id"] }}</td>
+                                <td>{{ pedido["cliente"] }}</td>
+                                <td>{{ pedido["descripcion"] }}</td>
+                                <td>{{ pedido["medidas"] or "-" }}</td>
 
-                                <tr>
+                                <!-- FECHA DE ENTREGA -->
+                                <td>
+                                    {% if pedido["fecha_entrega"] %}
+                                        {{ pedido["fecha_entrega"][8:10] }}/{{ pedido["fecha_entrega"][5:7] }}/{{ pedido["fecha_entrega"][0:4] }}
+                                    {% else %}
+                                        Sin fecha
+                                    {% endif %}
+                                </td>
 
-                                    <td>
-                                        {{ pedido["id"] }}
-                                    </td>
+                                <!-- ESTADO DEL PEDIDO -->
+                                <td>
+                                    {% set estado = pedido["estado"] %}
+                                    {% set atrasado = (
+                                        pedido["fecha_entrega"]
+                                        and pedido["fecha_entrega"] < hoy
+                                        and estado not in ["Terminado", "Entregado"]
+                                    ) %}
 
+                                    {% if atrasado %}
+                                        <span class="estado estado-atrasado">Atrasado</span>
+                                    {% elif estado in ["Pendiente", "En producción", "Terminado", "Entregado"] %}
+                                        {% set estilos = {
+                                            "Pendiente": "pendiente",
+                                            "En producción": "produccion",
+                                            "Terminado": "terminado",
+                                            "Entregado": "entregado"
+                                        } %}
+                                        <span class="estado estado-{{ estilos[estado] }}">
+                                            {{ estado }}
+                                        </span>
+                                    {% else %}
+                                        {{ estado }}
+                                    {% endif %}
+                                </td>
 
-                                    <td>
-                                        {{ pedido["cliente"] }}
-                                    </td>
-
-
-                                    <td>
-                                        {{ pedido["descripcion"] }}
-                                    </td>
-
-
-                                    <td>
-
-                                        {% if pedido["medidas"] %}
-
-                                            {{ pedido["medidas"] }}
-
-                                        {% else %}
-
-                                            -
-
-                                        {% endif %}
-
-                                    </td>
-
-
-                                    <td>
-
-                                        {% if pedido["fecha_entrega"] %}
-
-                                            {{ pedido["fecha_entrega"][8:10] }}/{{ pedido["fecha_entrega"][5:7] }}/{{ pedido["fecha_entrega"][0:4] }}
-
-                                        {% else %}
-
-                                            Sin fecha
-
-                                        {% endif %}
-
-                                    </td>
-
-
-                                    <td>
-
-                                        {% if
-                                            pedido["fecha_entrega"]
-                                            and pedido["fecha_entrega"] < hoy
-                                            and pedido["estado"] != "Terminado"
-                                            and pedido["estado"] != "Entregado"
-                                        %}
-
-                                            <span class="estado estado-atrasado">
-                                                Atrasado
-                                            </span>
-
-
-                                        {% elif pedido["estado"] == "Pendiente" %}
-
-                                            <span class="estado estado-pendiente">
-                                                Pendiente
-                                            </span>
-
-
-                                        {% elif pedido["estado"] == "En producción" %}
-
-                                            <span class="estado estado-produccion">
-                                                En producción
-                                            </span>
-
-
-                                        {% elif pedido["estado"] == "Terminado" %}
-
-                                            <span class="estado estado-terminado">
-                                                Terminado
-                                            </span>
-
-
-                                        {% elif pedido["estado"] == "Entregado" %}
-
-                                            <span class="estado estado-entregado">
-                                                Entregado
-                                            </span>
-
-
-                                        {% else %}
-
-                                            {{ pedido["estado"] }}
-
-                                        {% endif %}
-
-                                    </td>
-
-
-                                    <td>
-
-                                        {% if pedido["observaciones"] %}
-
-                                            {{ pedido["observaciones"] }}
-
-                                        {% else %}
-
-                                            -
-
-                                        {% endif %}
-
-                                    </td>
-
-
-                                    <td>
-
-                                        <a
-                                            href="/editar-pedido/{{ pedido['id'] }}"
-                                            class="enlace-editar"
-                                        >
-                                            Editar
-                                        </a>
-
-                                    </td>
-
-                                </tr>
-
+                                <td>{{ pedido["observaciones"] or "-" }}</td>
+                                <td>
+                                    <a href="{{ url_for('editar_pedido', pedido_id=pedido['id']) }}"
+                                       class="enlace-editar">Editar</a>
+                                </td>
+                            </tr>
                             {% endfor %}
-
                         </tbody>
-
                     </table>
-
                 </div>
-
             {% else %}
-
-                <p>
-                    Aún no existen pedidos registrados.
-                </p>
-
+                <p>Aún no existen pedidos registrados.</p>
             {% endif %}
-
         </section>
 
-
-        <!-- =====================================
-             COLUMNA DERECHA
-             ESTADOS
-             ===================================== -->
-
+        <!-- DESCRIPCIÓN DE ESTADOS -->
         <aside class="pedidos-panel pedidos-lateral">
+            <h3 class="titulo-panel-pedidos">Estados</h3>
 
-            <h3 class="titulo-panel-pedidos">
-                Estados
-            </h3>
-
+            {% set estados = [
+                ("Pendiente", "pendiente", "Pedido registrado que aún no comienza producción."),
+                ("En producción", "produccion", "Pedido que actualmente se encuentra en fabricación."),
+                ("Terminado", "terminado", "Fabricación finalizada y pendiente de entrega."),
+                ("Entregado", "entregado", "Pedido entregado al cliente."),
+                ("Atrasado", "atrasado", "La fecha de entrega venció y el pedido sigue pendiente.")
+            ] %}
 
             <div class="lista-estados">
-
-
-                <div class="estado-item">
-
-                    <span class="estado estado-pendiente">
-                        Pendiente
-                    </span>
-
-                    <p>
-                        Pedido registrado que aún no comienza producción.
-                    </p>
-
-                </div>
-
-
-                <div class="estado-item">
-
-                    <span class="estado estado-produccion">
-                        En producción
-                    </span>
-
-                    <p>
-                        Pedido que actualmente se encuentra en fabricación.
-                    </p>
-
-                </div>
-
-
-                <div class="estado-item">
-
-                    <span class="estado estado-terminado">
-                        Terminado
-                    </span>
-
-                    <p>
-                        Fabricación finalizada y pendiente de entrega.
-                    </p>
-
-                </div>
-
-
-                <div class="estado-item">
-
-                    <span class="estado estado-entregado">
-                        Entregado
-                    </span>
-
-                    <p>
-                        Pedido entregado al cliente.
-                    </p>
-
-                </div>
-
-
-                <div class="estado-item">
-
-                    <span class="estado estado-atrasado">
-                        Atrasado
-                    </span>
-
-                    <p>
-                        La fecha de entrega venció y el pedido sigue pendiente.
-                    </p>
-
-                </div>
-
-
+                {% for nombre, estilo, descripcion in estados %}
+                    <div class="estado-item">
+                        <span class="estado estado-{{ estilo }}">{{ nombre }}</span>
+                        <p>{{ descripcion }}</p>
+                    </div>
+                {% endfor %}
             </div>
-
         </aside>
 
-
     </section>
-
-
 </div>
-
 {% endblock %}

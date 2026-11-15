@@ -1,135 +1,59 @@
+
 {% extends "base.html" %}
-
-
-{% block title %}
-Eliminar Usuario - Promani
-{% endblock %}
-
+{% block title %}Eliminar Usuario - Promani{% endblock %}
 
 {% block content %}
-
 <div class="formulario-pagina">
 
-
+    <!-- ENCABEZADO -->
     <section class="formulario-encabezado">
-
-        <h2>
-            Eliminar usuario
-        </h2>
-
-        <p>
-            Confirma la eliminación de la cuenta seleccionada.
-        </p>
-
+        <h2>Eliminar usuario</h2>
+        <p>Confirma la eliminación de la cuenta seleccionada.</p>
     </section>
 
-
     <section class="formulario-card">
-
-
         <div class="formulario-card-header">
-
-            <h3>
-                Confirmar eliminación
-            </h3>
-
-            <p>
-                Revisa la información antes de continuar.
-            </p>
-
+            <h3>Confirmar eliminación</h3>
+            <p>Revisa la información antes de continuar.</p>
         </div>
-
 
         <div class="formulario-card-body">
 
-
+            <!-- INFORMACIÓN DEL USUARIO -->
             <div class="resumen-pedido">
-
-
                 <div class="resumen-item">
-
-                    <span class="resumen-etiqueta">
-                        Usuario
-                    </span>
-
-                    <span class="resumen-valor">
-                        {{ usuario["usuario"] }}
-                    </span>
-
+                    <span class="resumen-etiqueta">Usuario</span>
+                    <span class="resumen-valor">{{ usuario["usuario"] }}</span>
                 </div>
 
-
                 <div class="resumen-item">
-
-                    <span class="resumen-etiqueta">
-                        Rol
-                    </span>
-
+                    <span class="resumen-etiqueta">Rol</span>
                     <span class="resumen-valor">
-
-                        {% if usuario["rol"] == "administrador" %}
-
-                            Administrador
-
-                        {% else %}
-
-                            Operario
-
-                        {% endif %}
-
+                        {{ "Administrador" if usuario["rol"] == "administrador" else "Operario" }}
                     </span>
-
                 </div>
-
-
             </div>
 
-
+            <!-- ADVERTENCIA -->
             <div class="aviso-formulario">
-
-                <span class="estado estado-atrasado">
-                    Atención
-                </span>
-
+                <span class="estado estado-atrasado">Atención</span>
                 <br><br>
-
                 Esta acción eliminará la cuenta de acceso del usuario.
                 Una vez eliminada, ya no podrá iniciar sesión en el sistema.
-
             </div>
 
-
-            <form
-                method="POST"
-                action="/eliminar-usuario/{{ usuario['id'] }}"
-                class="formulario-promani"
-            >
-
+            <!-- CONFIRMACIÓN DE ELIMINACIÓN -->
+            <form method="POST"
+                  action="{{ url_for('eliminar_usuario', usuario_id=usuario['id']) }}"
+                  class="formulario-promani">
 
                 <div class="formulario-acciones">
-
-                    <a
-                        href="/usuarios"
-                        class="boton-volver"
-                    >
-                        Cancelar
-                    </a>
-
-                    <button type="submit">
-                        Eliminar usuario
-                    </button>
-
+                    <a href="{{ url_for('usuarios') }}" class="boton-volver">Cancelar</a>
+                    <button type="submit">Eliminar usuario</button>
                 </div>
-
-
             </form>
 
-
         </div>
-
     </section>
-
-
 </div>
-
 {% endblock %}

@@ -1,347 +1,134 @@
+
 {% extends "base.html" %}
-
-
-{% block title %}
-Nuevo Pedido - Promani
-{% endblock %}
-
+{% block title %}Nuevo Pedido - Promani{% endblock %}
 
 {% block content %}
-
 <div class="formulario-pagina">
 
-
+    <!-- ENCABEZADO -->
     <section class="formulario-encabezado">
-
-        <h2>
-            Registrar nuevo pedido
-        </h2>
-
+        <h2>Registrar nuevo pedido</h2>
         <p>
             Ingresa la información principal del trabajo solicitado por el cliente.
             Los datos permitirán realizar el seguimiento del pedido durante su producción.
         </p>
-
     </section>
 
-
     <section class="formulario-card">
-
-
         <div class="formulario-card-header">
-
-            <h3>
-                Información del pedido
-            </h3>
-
-            <p>
-                Completa los datos necesarios para registrar el nuevo trabajo.
-            </p>
-
+            <h3>Información del pedido</h3>
+            <p>Completa los datos necesarios para registrar el nuevo trabajo.</p>
         </div>
-
 
         <div class="formulario-card-body">
 
-
-            <form
-                method="POST"
-                action="/nuevo-pedido"
-                class="formulario-promani"
-                id="formulario-pedido"
-            >
-
+            <!-- FORMULARIO DE REGISTRO -->
+            <form method="POST" action="{{ url_for('nuevo_pedido') }}"
+                  class="formulario-promani" id="formulario-pedido">
 
                 <div class="formulario-grid">
 
-
                     <!-- CLIENTE -->
-
                     <div class="campo-formulario">
-
-                        <label for="cliente">
-                            Cliente
-                        </label>
-
-                        <input
-                            type="text"
-                            id="cliente"
-                            name="cliente"
-                            placeholder="Nombre del cliente"
-                            required
-                        >
-
+                        <label for="cliente">Cliente</label>
+                        <input type="text" id="cliente" name="cliente"
+                               placeholder="Nombre del cliente" required>
                     </div>
 
-
                     <!-- FECHA DE ENTREGA -->
-
                     <div class="campo-formulario">
-
-                        <label for="fecha_entrega">
-                            Fecha de entrega
-                        </label>
-
-                        <input
-                            type="date"
-                            id="fecha_entrega"
-                            name="fecha_entrega"
-                            required
-                        >
-
+                        <label for="fecha_entrega">Fecha de entrega</label>
+                        <input type="date" id="fecha_entrega" name="fecha_entrega" required>
                         <span class="ayuda-campo">
                             Fecha comprometida para finalizar o entregar el pedido.
                         </span>
-
                     </div>
-
 
                     <!-- DESCRIPCIÓN -->
-
                     <div class="campo-formulario campo-completo">
-
-                        <label for="descripcion">
-                            Descripción del pedido
-                        </label>
-
-                        <textarea
-                            id="descripcion"
-                            name="descripcion"
-                            placeholder="Ejemplo: Mesón de acero inoxidable con repisa inferior"
-                            required
-                        ></textarea>
-
+                        <label for="descripcion">Descripción del pedido</label>
+                        <textarea id="descripcion" name="descripcion"
+                                  placeholder="Ejemplo: Mesón de acero inoxidable con repisa inferior"
+                                  required></textarea>
                     </div>
 
-
-                    <!-- LARGO -->
-
+                    <!-- MEDIDAS -->
+                    {% for id, etiqueta, ejemplo in [
+                        ("largo", "Largo", "180"),
+                        ("ancho", "Ancho / Profundidad", "70"),
+                        ("alto", "Alto", "90")
+                    ] %}
                     <div class="campo-formulario">
-
-                        <label for="largo">
-                            Largo
-                        </label>
-
-                        <input
-                            type="text"
-                            id="largo"
-                            inputmode="decimal"
-                            placeholder="Ejemplo: 180"
-                        >
-
-                        <span class="ayuda-campo">
-                            Medida en centímetros.
-                        </span>
-
+                        <label for="{{ id }}">{{ etiqueta }}</label>
+                        <input type="text" id="{{ id }}" inputmode="decimal"
+                               placeholder="Ejemplo: {{ ejemplo }}"
+                               pattern="[0-9]+([.,][0-9]+)?"
+                               title="Ingresa un número positivo, por ejemplo {{ ejemplo }}">
+                        <span class="ayuda-campo">Medida en centímetros.</span>
                     </div>
+                    {% endfor %}
 
-
-                    <!-- ANCHO -->
-
+                    <!-- ESTADO INICIAL -->
                     <div class="campo-formulario">
-
-                        <label for="ancho">
-                            Ancho / Profundidad
-                        </label>
-
-                        <input
-                            type="text"
-                            id="ancho"
-                            inputmode="decimal"
-                            placeholder="Ejemplo: 70"
-                        >
-
-                        <span class="ayuda-campo">
-                            Medida en centímetros.
-                        </span>
-
-                    </div>
-
-
-                    <!-- ALTO -->
-
-                    <div class="campo-formulario">
-
-                        <label for="alto">
-                            Alto
-                        </label>
-
-                        <input
-                            type="text"
-                            id="alto"
-                            inputmode="decimal"
-                            placeholder="Ejemplo: 90"
-                        >
-
-                        <span class="ayuda-campo">
-                            Medida en centímetros.
-                        </span>
-
-                    </div>
-
-
-                    <!-- ESTADO -->
-
-                    <div class="campo-formulario">
-
-                        <label for="estado">
-                            Estado inicial
-                        </label>
-
-                        <select
-                            id="estado"
-                            name="estado"
-                            required
-                        >
-
-                            <option
-                                value="Pendiente"
-                                selected
-                            >
-                                Pendiente
-                            </option>
-
-                            <option value="En producción">
-                                En producción
-                            </option>
-
-                            <option value="Terminado">
-                                Terminado
-                            </option>
-
-                            <option value="Entregado">
-                                Entregado
-                            </option>
-
+                        <label for="estado">Estado inicial</label>
+                        <select id="estado" name="estado" required>
+                            {% for estado in ["Pendiente", "En producción", "Terminado", "Entregado"] %}
+                                <option value="{{ estado }}">{{ estado }}</option>
+                            {% endfor %}
                         </select>
-
                     </div>
 
-
-                    <!-- CAMPO OCULTO PARA GUARDAR LAS MEDIDAS -->
-
-                    <input
-                        type="hidden"
-                        id="medidas"
-                        name="medidas"
-                    >
-
+                    <input type="hidden" id="medidas" name="medidas">
 
                     <!-- OBSERVACIONES -->
-
                     <div class="campo-formulario campo-completo">
-
-                        <label for="observaciones">
-                            Observaciones
-                        </label>
-
-                        <textarea
-                            id="observaciones"
-                            name="observaciones"
-                            placeholder="Información adicional, detalles especiales, materiales solicitados u otras indicaciones"
-                        ></textarea>
-
-                        <span class="ayuda-campo">
-                            Este campo es opcional.
-                        </span>
-
+                        <label for="observaciones">Observaciones</label>
+                        <textarea id="observaciones" name="observaciones"
+                                  placeholder="Información adicional, detalles especiales, materiales solicitados u otras indicaciones"></textarea>
+                        <span class="ayuda-campo">Este campo es opcional.</span>
                     </div>
 
-
                 </div>
 
-
+                <!-- ACCIONES -->
                 <div class="formulario-acciones">
-
-                    <a
-                        href="/pedidos"
-                        class="boton-volver"
-                    >
-                        Volver
-                    </a>
-
-
-                    <button type="submit">
-                        Registrar pedido
-                    </button>
-
+                    <a href="{{ url_for('pedidos') }}" class="boton-volver">Volver</a>
+                    <button type="submit">Registrar pedido</button>
                 </div>
-
-
             </form>
-
-
         </div>
-
     </section>
-
-
 </div>
 
-
+<!-- VALIDACIÓN Y FORMATO DE MEDIDAS -->
 <script>
+    document.getElementById("formulario-pedido").addEventListener("submit", event => {
+        const campos = ["largo", "ancho", "alto"];
+        const valores = campos.map(id =>
+            document.getElementById(id).value.trim().replace(",", ".")
+        );
 
-    document
-        .getElementById("formulario-pedido")
-        .addEventListener("submit", function(event) {
+        const alguna = valores.some(valor => valor !== "");
+        const todas = valores.every(valor => valor !== "");
 
-            const largo = document
-                .getElementById("largo")
-                .value
-                .trim()
-                .replace(",", ".");
+        if (alguna && !todas) {
+            event.preventDefault();
+            alert("Si deseas registrar las medidas, debes completar Largo, Ancho y Alto.");
+            return;
+        }
 
-            const ancho = document
-                .getElementById("ancho")
-                .value
-                .trim()
-                .replace(",", ".");
+        if (todas && valores.some(valor =>
+            !Number.isFinite(Number(valor)) || Number(valor) <= 0
+        )) {
+            event.preventDefault();
+            alert("Las medidas deben ser números mayores que 0.");
+            return;
+        }
 
-            const alto = document
-                .getElementById("alto")
-                .value
-                .trim()
-                .replace(",", ".");
-
-
-            const algunaMedida =
-                largo !== "" ||
-                ancho !== "" ||
-                alto !== "";
-
-
-            const todasLasMedidas =
-                largo !== "" &&
-                ancho !== "" &&
-                alto !== "";
-
-
-            if (algunaMedida && !todasLasMedidas) {
-
-                event.preventDefault();
-
-                alert(
-                    "Si deseas registrar las medidas del pedido, debes completar Largo, Ancho y Alto."
-                );
-
-                return;
-
-            }
-
-
-            if (todasLasMedidas) {
-
-                document.getElementById("medidas").value =
-                    largo + " x " + ancho + " x " + alto + " cm";
-
-            } else {
-
-                document.getElementById("medidas").value = "";
-
-            }
-
-        });
-
+        document.getElementById("medidas").value = todas
+            ? valores.join(" x ") + " cm"
+            : "";
+    });
 </script>
 
 {% endblock %}

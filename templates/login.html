@@ -1,127 +1,93 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Iniciar Sesión - Promani</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='login.css') }}"
-    >
-
+    <style>
+        /* MENSAJE DE CREDENCIALES INCORRECTAS */
+        .login-error {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            background: #fff1f2;
+            color: #991b1b;
+            border: 1px solid #fecdd3;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
 </head>
 
-
 <body class="login-page">
-
-
     <div class="login-contenedor">
 
-
+        <!-- LOGO -->
         <div class="login-logo">
-
-            <img
-                src="{{ url_for('static', filename='images/logo_promani.png') }}"
-                alt="Logo Promani"
-            >
-
+            <img src="{{ url_for('static', filename='images/logo_promani.png') }}"
+                 alt="Logo Promani">
         </div>
-
 
         <div class="login-contenido">
 
-
+            <!-- PRESENTACIÓN -->
             <section class="login-presentacion">
-
-                <h1>
-                    Bienvenido
-                </h1>
-
+                <h1>Bienvenido</h1>
                 <p>
-                    Sistema de Gestión de Pedidos e Inventario
-                    desarrollado para centralizar y facilitar
-                    el control de materiales, pedidos y procesos
-                    internos de Promani.
+                    Sistema de Gestión de Pedidos e Inventario desarrollado
+                    para centralizar y facilitar el control de materiales,
+                    pedidos y procesos internos de Promani.
                 </p>
-
             </section>
 
-
+            <!-- FORMULARIO DE INICIO DE SESIÓN -->
             <section class="login-panel">
-
-                <h2>
-                    Iniciar Sesión
-                </h2>
-
+                <h2>Iniciar Sesión</h2>
                 <p class="descripcion-login">
                     Ingrese sus credenciales para acceder al sistema.
                 </p>
 
+                <!-- MENSAJE DE ERROR -->
+                {% if error %}
+                    <div class="login-error" role="alert">
+                        <span aria-hidden="true">⚠</span>
+                        <span>{{ error }}</span>
+                    </div>
+                {% endif %}
 
-                <form method="POST" action="/login">
+                <form method="POST" action="{{ url_for('login') }}">
+                    <label for="usuario">Usuario</label>
+                    <input type="text"
+                           id="usuario"
+                           name="usuario"
+                           placeholder="Ingrese su usuario"
+                           autocomplete="username"
+                           required autofocus>
 
+                    <label for="contrasena">Contraseña</label>
+                    <input type="password"
+                           id="contrasena"
+                           name="contrasena"
+                           placeholder="Ingrese su contraseña"
+                           autocomplete="current-password"
+                           required>
 
-                    <label for="usuario">
-                        Usuario
-                    </label>
-
-                    <input
-                        type="text"
-                        id="usuario"
-                        name="usuario"
-                        placeholder="Ingrese su usuario"
-                        autocomplete="username"
-                        required
-                        autofocus
-                    >
-
-
-                    <label for="contrasena">
-                        Contraseña
-                    </label>
-
-                    <input
-                        type="password"
-                        id="contrasena"
-                        name="contrasena"
-                        placeholder="Ingrese su contraseña"
-                        autocomplete="current-password"
-                        required
-                    >
-
-
-                    <button type="submit">
-                        Ingresar al sistema
-                    </button>
-
-
+                    <button type="submit">Ingresar al sistema</button>
                 </form>
 
-
-                <p class="login-pie">
-                    Sistema de uso interno de Promani
-                </p>
-
-
+                <p class="login-pie">Sistema de uso interno de Promani</p>
             </section>
 
-
         </div>
-
-
     </div>
-
-
 </body>
-
 </html>

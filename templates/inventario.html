@@ -1,15 +1,11 @@
 
 {% extends "base.html" %}
-
-{% block title %}
-Inventario - Promani
-{% endblock %}
+{% block title %}Inventario - Promani{% endblock %}
 
 {% block content %}
 
 <style>
     /* MENSAJES */
-
     .inventario-aviso {
         padding: 12px 16px;
         margin: 12px 0 18px;
@@ -29,8 +25,7 @@ Inventario - Promani
         border: 1px solid #f3b9b9;
     }
 
-    /* COLUMNA ACCIONES */
-
+    /* ACCIONES DE INVENTARIO */
     .tabla-inventario th.col-acciones,
     .tabla-inventario td.col-acciones {
         width: 142px;
@@ -38,9 +33,7 @@ Inventario - Promani
         vertical-align: middle;
     }
 
-    .tabla-inventario td.col-acciones {
-        padding: 10px 8px;
-    }
+    .tabla-inventario td.col-acciones { padding: 10px 8px; }
 
     .tabla-inventario .acciones-material {
         display: flex;
@@ -48,8 +41,6 @@ Inventario - Promani
         align-items: center;
         min-height: 35px;
     }
-
-    /* ELIMINAR RECUADRO DEL FORMULARIO */
 
     .tabla-inventario form.accion-eliminar-formulario {
         display: inline-flex !important;
@@ -68,7 +59,6 @@ Inventario - Promani
     }
 
     /* BOTÓN ELIMINAR */
-
     .tabla-inventario button.boton-eliminar-material {
         display: inline-flex;
         align-items: center;
@@ -110,7 +100,6 @@ Inventario - Promani
     }
 
     /* MATERIAL CON HISTORIAL */
-
     .tabla-inventario .material-con-historial {
         display: inline-flex;
         align-items: center;
@@ -126,161 +115,61 @@ Inventario - Promani
     }
 </style>
 
-
 <div class="inventario-contenedor">
 
     <!-- ENCABEZADO -->
-
     <section class="inventario-encabezado">
-
         <h2>Gestión de Inventario</h2>
-
-        <p>
-            Desde esta sección puedes registrar materiales,
-            controlar su consumo y revisar los movimientos del inventario.
-        </p>
-
+        <p>Desde esta sección puedes registrar materiales, controlar su consumo y revisar los movimientos del inventario.</p>
     </section>
 
-
     <!-- MENSAJES DEL SISTEMA -->
-
     {% with mensajes = get_flashed_messages(with_categories=true) %}
-
-        {% if mensajes %}
-
-            {% for categoria, mensaje in mensajes %}
-
-                <div
-                    class="inventario-aviso inventario-aviso-{{ categoria }}"
-                    role="status"
-                >
-                    {{ mensaje }}
-                </div>
-
-            {% endfor %}
-
-        {% endif %}
-
+        {% for categoria, mensaje in mensajes %}
+            <div class="inventario-aviso inventario-aviso-{{ categoria }}" role="status">
+                {{ mensaje }}
+            </div>
+        {% endfor %}
     {% endwith %}
-
-
-    <!-- CONTENIDO DE INVENTARIO -->
 
     <section class="inventario-layout">
 
-
-        <!-- COLUMNA IZQUIERDA: REGISTROS -->
-
+        <!-- REGISTROS -->
         <aside class="inventario-panel inventario-lateral">
-
-            <h3 class="titulo-panel-inventario">
-                Registros
-            </h3>
+            <h3 class="titulo-panel-inventario">Registros</h3>
 
             <div class="inventario-tarjetas">
-
-
-                <!-- REGISTRAR MATERIAL -->
-
-                <a
-                    href="/nuevo-material"
-                    class="acceso-card inventario-card"
-                >
-
-                    <div class="acceso-contenido">
-
-                        <h3>Registrar material</h3>
-
-                        <p>
-                            Agregar un nuevo material al inventario,
-                            indicando su unidad, stock inicial y stock mínimo.
-                        </p>
-
-                    </div>
-
-                    <span class="acceso-ir">
-                        Registrar material →
-                    </span>
-
-                </a>
-
-
-                <!-- REGISTRAR CONSUMO -->
-
-                <a
-                    href="/nuevo-consumo"
-                    class="acceso-card inventario-card"
-                >
-
-                    <div class="acceso-contenido">
-
-                        <h3>Registrar consumo</h3>
-
-                        <p>
-                            Registrar materiales utilizados en un pedido
-                            y descontarlos automáticamente del stock.
-                        </p>
-
-                    </div>
-
-                    <span class="acceso-ir">
-                        Registrar consumo →
-                    </span>
-
-                </a>
-
-
-                <!-- REGISTRAR COMPRA: ADMINISTRADOR -->
+                {% set registros = [
+                    ("Registrar material", "Agregar un nuevo material al inventario, indicando su unidad, stock inicial y stock mínimo.", "nuevo_material", "Registrar material"),
+                    ("Registrar consumo", "Registrar materiales utilizados en un pedido y descontarlos automáticamente del stock.", "nuevo_consumo", "Registrar consumo")
+                ] %}
 
                 {% if session.get("rol") == "administrador" %}
-
-                    <a
-                        href="/nueva-compra"
-                        class="acceso-card inventario-card"
-                    >
-
-                        <div class="acceso-contenido">
-
-                            <h3>Registrar compra</h3>
-
-                            <p>
-                                Registrar compras de materiales y aumentar
-                                automáticamente el stock disponible.
-                            </p>
-
-                        </div>
-
-                        <span class="acceso-ir">
-                            Registrar compra →
-                        </span>
-
-                    </a>
-
+                    {% set registros = registros + [
+                        ("Registrar compra", "Registrar compras de materiales y aumentar automáticamente el stock disponible.", "nueva_compra", "Registrar compra")
+                    ] %}
                 {% endif %}
 
+                {% for titulo, descripcion, ruta, texto in registros %}
+                    <a href="{{ url_for(ruta) }}" class="acceso-card inventario-card">
+                        <div class="acceso-contenido">
+                            <h3>{{ titulo }}</h3>
+                            <p>{{ descripcion }}</p>
+                        </div>
+                        <span class="acceso-ir">{{ texto }} →</span>
+                    </a>
+                {% endfor %}
             </div>
-
         </aside>
 
-
-        <!-- COLUMNA CENTRAL: MATERIALES -->
-
+        <!-- MATERIALES REGISTRADOS -->
         <section class="inventario-panel inventario-central">
-
-            <h3 class="titulo-panel-inventario">
-                Materiales registrados
-            </h3>
-
+            <h3 class="titulo-panel-inventario">Materiales registrados</h3>
 
             {% if materiales %}
-
                 <div class="tabla-inventario">
-
                     <table>
-
                         <thead>
-
                             <tr>
                                 <th>ID</th>
                                 <th>Material</th>
@@ -288,256 +177,106 @@ Inventario - Promani
                                 <th>Stock actual</th>
                                 <th>Stock mínimo</th>
                                 <th>Estado</th>
-
                                 {% if session.get("rol") == "administrador" %}
-
-                                    <th class="col-acciones">
-                                        Acciones
-                                    </th>
-
+                                    <th class="col-acciones">Acciones</th>
                                 {% endif %}
-
                             </tr>
-
                         </thead>
 
-
                         <tbody>
-
                             {% for material in materiales %}
+                            <tr>
+                                <td>{{ material["id"] }}</td>
+                                <td>{{ material["nombre"] }}</td>
+                                <td>{{ material["unidad"] }}</td>
 
-                                <tr>
+                                <td>
+                                    {{ material["stock"] | int if material["stock"] % 1 == 0 else material["stock"] }}
+                                </td>
 
-                                    <!-- ID -->
+                                <td>
+                                    {{ material["stock_minimo"] | int if material["stock_minimo"] % 1 == 0 else material["stock_minimo"] }}
+                                </td>
 
-                                    <td>
-                                        {{ material["id"] }}
-                                    </td>
-
-
-                                    <!-- MATERIAL -->
-
-                                    <td>
-                                        {{ material["nombre"] }}
-                                    </td>
-
-
-                                    <!-- UNIDAD -->
-
-                                    <td>
-                                        {{ material["unidad"] }}
-                                    </td>
-
-
-                                    <!-- STOCK ACTUAL -->
-
-                                    <td>
-
-                                        {% if material["stock"] % 1 == 0 %}
-
-                                            {{ material["stock"] | int }}
-
-                                        {% else %}
-
-                                            {{ material["stock"] }}
-
-                                        {% endif %}
-
-                                    </td>
-
-
-                                    <!-- STOCK MÍNIMO -->
-
-                                    <td>
-
-                                        {% if material["stock_minimo"] % 1 == 0 %}
-
-                                            {{ material["stock_minimo"] | int }}
-
-                                        {% else %}
-
-                                            {{ material["stock_minimo"] }}
-
-                                        {% endif %}
-
-                                    </td>
-
-
-                                    <!-- ESTADO -->
-
-                                    <td>
-
-                                        {% if material["stock"] <= material["stock_minimo"] %}
-
-                                            <span class="estado estado-atrasado">
-                                                Stock bajo
-                                            </span>
-
-                                        {% else %}
-
-                                            <span class="estado estado-terminado">
-                                                Disponible
-                                            </span>
-
-                                        {% endif %}
-
-                                    </td>
-
-
-                                    <!-- ACCIONES: SOLO ADMINISTRADOR -->
-
-                                    {% if session.get("rol") == "administrador" %}
-
-                                        <td class="col-acciones">
-
-                                            <div class="acciones-material">
-
-                                                {% if material["tiene_compras"] or material["tiene_consumos"] %}
-
-                                                    <span
-                                                        class="material-con-historial"
-                                                        title="No se puede eliminar porque existen compras o consumos asociados"
-                                                    >
-                                                        Con historial
-                                                    </span>
-
-                                                {% else %}
-
-                                                    <form
-                                                        class="accion-eliminar-formulario"
-                                                        method="POST"
-                                                        action="{{ url_for('eliminar_material', material_id=material['id']) }}"
-                                                        onsubmit="return confirm('¿Deseas eliminar este material? Esta acción no se puede deshacer.');"
-                                                    >
-
-                                                        <input
-                                                            type="hidden"
-                                                            name="csrf_token"
-                                                            value="{{ session.get('csrf_eliminar_material', '') }}"
-                                                        >
-
-                                                        <button
-                                                            type="submit"
-                                                            class="boton-eliminar-material"
-                                                        >
-
-                                                            <svg
-                                                                viewBox="0 0 24 24"
-                                                                fill="none"
-                                                                stroke="currentColor"
-                                                                stroke-width="1.8"
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                aria-hidden="true"
-                                                            >
-                                                                <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 10v7M14 10v7"/>
-                                                            </svg>
-
-                                                            Eliminar
-
-                                                        </button>
-
-                                                    </form>
-
-                                                {% endif %}
-
-                                            </div>
-
-                                        </td>
-
+                                <!-- ESTADO DEL STOCK -->
+                                <td>
+                                    {% if material["stock"] <= material["stock_minimo"] %}
+                                        <span class="estado estado-atrasado">Stock bajo</span>
+                                    {% else %}
+                                        <span class="estado estado-terminado">Disponible</span>
                                     {% endif %}
+                                </td>
 
-                                </tr>
+                                <!-- ELIMINACIÓN: SOLO ADMINISTRADOR -->
+                                {% if session.get("rol") == "administrador" %}
+                                <td class="col-acciones">
+                                    <div class="acciones-material">
 
+                                        {% if material["tiene_compras"] or material["tiene_consumos"] %}
+                                            <span class="material-con-historial"
+                                                  title="No se puede eliminar porque existen compras o consumos asociados">
+                                                Con historial
+                                            </span>
+                                        {% else %}
+                                            <form class="accion-eliminar-formulario"
+                                                  method="POST"
+                                                  action="{{ url_for('eliminar_material', material_id=material['id']) }}"
+                                                  onsubmit="return confirm('¿Deseas eliminar este material? Esta acción no se puede deshacer.');">
+
+                                                <input type="hidden" name="csrf_token"
+                                                       value="{{ session.get('csrf_eliminar_material', '') }}">
+
+                                                <button type="submit" class="boton-eliminar-material">
+                                                    <svg viewBox="0 0 24 24" fill="none"
+                                                         stroke="currentColor" stroke-width="1.8"
+                                                         stroke-linecap="round" stroke-linejoin="round"
+                                                         aria-hidden="true">
+                                                        <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 10v7M14 10v7"/>
+                                                    </svg>
+                                                    Eliminar
+                                                </button>
+                                            </form>
+                                        {% endif %}
+
+                                    </div>
+                                </td>
+                                {% endif %}
+                            </tr>
                             {% endfor %}
-
                         </tbody>
-
                     </table>
-
                 </div>
-
             {% else %}
-
-                <p>
-                    Aún no existen materiales registrados.
-                </p>
-
+                <p>Aún no existen materiales registrados.</p>
             {% endif %}
-
         </section>
 
-
-        <!-- COLUMNA DERECHA: HISTORIALES -->
-
+        <!-- HISTORIALES -->
         <aside class="inventario-panel inventario-lateral">
-
-            <h3 class="titulo-panel-inventario">
-                Historiales
-            </h3>
+            <h3 class="titulo-panel-inventario">Historiales</h3>
 
             <div class="inventario-tarjetas">
-
-
-                <!-- HISTORIAL DE CONSUMOS -->
-
-                <a
-                    href="/consumos"
-                    class="acceso-card inventario-card"
-                >
-
+                <a href="{{ url_for('consumos') }}" class="acceso-card inventario-card">
                     <div class="acceso-contenido">
-
                         <h3>Historial de consumos</h3>
-
-                        <p>
-                            Consultar los materiales utilizados,
-                            pedidos asociados, cantidades y fechas.
-                        </p>
-
+                        <p>Consultar los materiales utilizados, pedidos asociados, cantidades y fechas.</p>
                     </div>
-
-                    <span class="acceso-ir">
-                        Ver historial →
-                    </span>
-
+                    <span class="acceso-ir">Ver historial →</span>
                 </a>
 
-
-                <!-- HISTORIAL DE COMPRAS: ADMINISTRADOR -->
-
                 {% if session.get("rol") == "administrador" %}
-
-                    <a
-                        href="/compras"
-                        class="acceso-card inventario-card"
-                    >
-
+                    <a href="{{ url_for('compras') }}" class="acceso-card inventario-card">
                         <div class="acceso-contenido">
-
                             <h3>Historial de compras</h3>
-
-                            <p>
-                                Revisar compras realizadas, proveedores,
-                                materiales y cantidades ingresadas.
-                            </p>
-
+                            <p>Revisar compras realizadas, proveedores, materiales y cantidades ingresadas.</p>
                         </div>
-
-                        <span class="acceso-ir">
-                            Ver historial →
-                        </span>
-
+                        <span class="acceso-ir">Ver historial →</span>
                     </a>
-
                 {% endif %}
-
             </div>
-
         </aside>
 
     </section>
-
 </div>
 
 {% endblock %}
